@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f9fa">
+  <meta name="description" content="Inicia sesión en tu cuenta de CFT — Cuba Fashion Technologies.">
+  <title>Iniciar sesión | CFT — Cuba Fashion Technologies</title>
+  <script>
+    try {
+      const savedTheme = localStorage.getItem("cft-theme") || localStorage.getItem("cuban-fashioner-tech-theme");
+      if (savedTheme === "light" || savedTheme === "dark") {
+        document.documentElement.dataset.theme = savedTheme;
+      }
+    } catch (error) {
+      console.warn("No se pudo leer la preferencia de tema guardada.", error);
+    }
+  </script>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/login.css">
+</head>
+<body class="login-page">
+  <header class="login-header">
+    <a class="login-brand" href="index.html" aria-label="CFT — Cuba Fashion Technologies, volver al inicio">
+      <span class="login-brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 40" fill="none">
+          <path d="M3 21c4-4 9-6 16-6 6-6 17-8 27-3 5-1 10-1 15 1l-4 4-10 2c-2 4-6 7-12 7l-4 6-5-2 3-5c-6 0-11-1-16-3l-8 6-4-2 5-6-7 1Z" fill="currentColor"/>
+          <path d="M23 14c7-4 15-4 22 0l-4 5-13 1-7-3 2-3Z" fill="var(--accent)"/>
+          <path d="m26 11 2-3m5 2 1-3m5 4 2-2m12 7 1-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          <circle cx="55" cy="14" r="1" fill="var(--surface)"/>
+          <path d="M10 20h8m31 2 7-1" stroke="var(--surface)" stroke-width="1" stroke-linecap="round" opacity=".8"/>
+        </svg>
+      </span>
+      <span class="login-brand-name">CFT<span>Cuba Fashion Technologies</span></span>
+    </a>
+    <button class="theme-toggle login-theme-toggle" id="theme-toggle" type="button" aria-label="Cambiar a modo oscuro" aria-pressed="false" title="Cambiar a modo oscuro">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/>
+        <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.5 8.5 0 1 0 20.2 15.2Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="theme-toggle-label" id="theme-toggle-label">Oscuro</span>
+    </button>
+  </header>
+
+  <main class="login-main">
+    <div class="login-layout">
+      <section class="login-intro" aria-labelledby="login-intro-title">
+        <span class="eyebrow">Tu espacio CFT</span>
+        <h1 id="login-intro-title">La tecnología avanza. <span>Tu cuenta también.</span></h1>
+        <p>Accede a tu espacio de cliente y continúa donde lo dejaste.</p>
+        <div class="login-intro-note">
+          <span class="login-status-dot" aria-hidden="true"></span>
+          <span>Ingeniería precisa. Visión sin límites.</span>
+        </div>
+        <div class="login-orbit login-orbit-one" aria-hidden="true"></div>
+        <div class="login-orbit login-orbit-two" aria-hidden="true"></div>
+      </section>
+
+      <section class="login-card" aria-labelledby="login-title">
+        <div class="login-card-heading">
+          <span class="login-card-kicker">Bienvenido de vuelta</span>
+          <h2 id="login-title">Iniciar sesión</h2>
+          <p>Ingresa tus datos para acceder a tu cuenta.</p>
+        </div>
+
+        <form class="login-form" id="login-form">
+          <div class="login-field">
+            <label for="email">Correo electrónico</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              placeholder="nombre@ejemplo.com"
+              required
+              aria-describedby="login-message">
+          </div>
+
+          <div class="login-field">
+            <div class="login-label-row">
+              <label for="password">Contraseña</label>
+            </div>
+            <div class="login-password-wrap">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Escribe tu contraseña"
+                required
+                aria-describedby="login-message">
+              <button class="password-toggle" id="password-toggle" type="button" aria-label="Mostrar contraseña" aria-pressed="false">
+                <svg class="eye-open" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                  <circle cx="12" cy="12" r="2.7" stroke="currentColor" stroke-width="1.6"/>
+                </svg>
+                <svg class="eye-closed" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="m3 3 18 18M10.6 6.2A10.8 10.8 0 0 1 12 6c6.1 0 9.5 6 9.5 6a16.4 16.4 0 0 1-3.1 3.7M6.2 6.3C3.8 8 2.5 12 2.5 12s3.4 6 9.5 6c1.2 0 2.3-.2 3.2-.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="login-field" id="confirm-password-field" hidden>
+            <label for="confirm-password">Confirmar contraseña</label>
+            <input
+              id="confirm-password"
+              name="confirm-password"
+              type="password"
+              autocomplete="new-password"
+              placeholder="Vuelve a escribir tu contraseña"
+              minlength="6"
+              disabled
+              aria-describedby="login-message">
+          </div>
+
+          <div class="login-options">
+            <a class="login-text-link" href="#restablecer" id="forgot-password">¿Olvidaste tu contraseña?</a>
+            <label class="remember-option" for="remember-me">
+              <input id="remember-me" name="remember-me" type="checkbox">
+              <span>Recordarme</span>
+            </label>
+          </div>
+
+          <p class="login-message" id="login-message" role="status" aria-live="polite" aria-atomic="true" hidden></p>
+
+          <button class="login-submit" id="login-submit" type="submit">
+            <span class="login-submit-label">Iniciar sesión</span>
+            <span class="login-spinner" aria-hidden="true"></span>
+          </button>
+        </form>
+
+        <p class="login-back-link" id="account-prompt">¿Aún no tienes cuenta? <a href="#registrarse" id="account-toggle">Regístrate</a></p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="login-footer">
+    <span>© <span id="current-year"></span> CFT — Cuba Fashion Technologies</span>
+    <a href="index.html">Volver al sitio</a>
+  </footer>
+
+  <script type="module" src="../js/login.js"></script>
+</body>
+</html>

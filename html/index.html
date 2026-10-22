@@ -110,12 +110,14 @@
           </svg>
           <span class="theme-toggle-label">Oscuro</span>
         </button>
-        <a class="button nav-contact" href="https://wa.me/5350727220" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp al +53 50727220">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M20 11.6a8 8 0 0 1-11.8 7L4 20l1.4-4A8 8 0 1 1 20 11.6Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-            <path d="M9 8.5c.3-.5.5-.5.8-.5h.4c.2 0 .4.1.5.4l.6 1.4c.1.3.1.5-.1.7l-.5.6c-.2.2-.2.4 0 .7.5.8 1.1 1.4 1.9 1.8.3.2.5.2.7-.1l.6-.7c.2-.2.4-.2.7-.1l1.3.6c.3.1.4.3.4.5 0 .5-.2 1.1-.7 1.4-.5.4-1.1.6-1.8.5-1-.1-2.3-.8-3.4-1.8-1.3-1.2-2.1-2.6-2.2-3.6-.1-.7.2-1.3.8-1.8Z" fill="currentColor"/>
-          </svg>
-          Hablemos
+        <a class="nav-account" href="login.html" aria-label="Inicio o registro">
+          <span class="nav-account-avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M5 20c.6-3.4 3.2-5.3 7-5.3s6.4 1.9 7 5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span>Inicio o registro</span>
         </a>
       </nav>
     </div>
@@ -299,7 +301,7 @@
       </div>
     </section>
 
-    <section class="contact-band" aria-label="Contacto">
+    <section class="contact-band" id="contacto" aria-label="Contacto">
       <div class="container">
         <div class="contact-panel">
           <div>
@@ -322,63 +324,11 @@
     <div class="container footer-main">
       <p class="footer-copy">© <span id="current-year">2026</span> CFT — Cuba Fashion Technologies. Todos los derechos reservados.</p>
       <nav class="footer-links" aria-label="Enlaces legales">
-        <button type="button" data-modal="privacy-modal">Política de privacidad</button>
-        <button type="button" data-modal="terms-modal">Términos y condiciones</button>
+        <a href="../../Politicas y terminos/html/privacidad.html">Política de privacidad</a>
+        <a href="../../Politicas y terminos/html/terminos.html">Términos y condiciones</a>
       </nav>
     </div>
   </footer>
-
-  <dialog class="modal" id="privacy-modal" aria-labelledby="privacy-title">
-    <div class="modal-content">
-      <div class="modal-head">
-        <div>
-          <span class="eyebrow">Información legal</span>
-          <h2 id="privacy-title">Política de privacidad</h2>
-        </div>
-        <button class="modal-close" type="button" aria-label="Cerrar Política de privacidad">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <h3>Información que recopilamos</h3>
-        <p>Este sitio es una página informativa estática. No incluye formularios, cuentas de usuario ni herramientas propias de analítica, y no recopila directamente datos personales a través de la navegación.</p>
-        <h3>Contacto mediante servicios externos</h3>
-        <p>Los enlaces de contacto abren WhatsApp y los enlaces editoriales pueden dirigir a sitios de terceros. Si eliges utilizarlos, esos servicios podrían procesar información conforme a sus propias políticas de privacidad; te recomendamos consultarlas antes de compartir datos.</p>
-        <h3>Uso de la información</h3>
-        <p>La información que decidas compartir voluntariamente por canales externos se utilizará para responder a tu consulta y dar seguimiento a la conversación.</p>
-        <h3>Actualizaciones</h3>
-        <p>Esta política puede actualizarse para reflejar cambios en el sitio o en los servicios ofrecidos. La versión publicada en esta página será la vigente.</p>
-      </div>
-    </div>
-  </dialog>
-
-  <dialog class="modal" id="terms-modal" aria-labelledby="terms-title">
-    <div class="modal-content">
-      <div class="modal-head">
-        <div>
-          <span class="eyebrow">Información legal</span>
-          <h2 id="terms-title">Términos y condiciones</h2>
-        </div>
-        <button class="modal-close" type="button" aria-label="Cerrar Términos y condiciones">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <h3>Uso del sitio</h3>
-        <p>Este sitio presenta información general sobre CFT — Cuba Fashion Technologies y sus servicios. Su contenido se ofrece únicamente con fines informativos y no constituye una oferta contractual.</p>
-        <h3>Servicios y cotizaciones</h3>
-        <p>El alcance, disponibilidad, precio y plazos de cualquier servicio se acordarán directamente con cada cliente antes de iniciar un proyecto. Una consulta o contacto no implica la aceptación de un encargo.</p>
-        <h3>Contenido y enlaces externos</h3>
-        <p>El contenido se proporciona de buena fe y puede modificarse sin previo aviso. Los enlaces a páginas de terceros se facilitan como referencia; CFT — Cuba Fashion Technologies no controla ni garantiza sus contenidos o servicios.</p>
-        <h3>Responsabilidad</h3>
-        <p>Se procura mantener el sitio disponible y actualizado, pero no se garantiza que el acceso sea ininterrumpido ni que toda la información esté libre de errores. El uso de los enlaces externos queda a criterio de cada visitante.</p>
-      </div>
-    </div>
-  </dialog>
 
   <script src="../js/main.js" defer></script>
 </body>
