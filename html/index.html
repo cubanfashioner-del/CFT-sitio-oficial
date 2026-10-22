@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f9fa">
+  <meta name="description" content="CFT — Cuba Fashion Technologies: hardware a medida, desarrollo de software y consultoría tecnológica con visión de futuro.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="CFT — Cuba Fashion Technologies">
+  <meta property="og:description" content="Hardware de alto rendimiento, software y consultoría para construir lo que viene.">
+  <title>CFT — Cuba Fashion Technologies | Tecnología con visión</title>
+  <script>
+    try {
+      const savedTheme = localStorage.getItem("cft-theme") || localStorage.getItem("cuban-fashioner-tech-theme");
+      if (savedTheme === "light" || savedTheme === "dark") {
+        document.documentElement.dataset.theme = savedTheme;
+      }
+    } catch (error) {
+      console.warn("No se pudo leer la preferencia de tema guardada.", error);
+    }
+  </script>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div class="global-network" aria-hidden="true">
+    <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="route-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M1 1 8 5 1 9" class="route-arrowhead"/>
+        </marker>
+      </defs>
+
+      <g class="network-desktop">
+        <circle class="globe-outline" cx="1090" cy="445" r="285"/>
+        <ellipse class="globe-line" cx="1090" cy="445" rx="124" ry="285"/>
+        <ellipse class="globe-line" cx="1090" cy="445" rx="225" ry="285"/>
+        <path class="globe-line" d="M824 365c160 74 372 74 532 0M806 445h568M824 525c160-74 372-74 532 0"/>
+        <path class="continent" d="m929 290 34-38 50-15 29 19-6 33 29 19-12 29-44 4-22 31-35-7-12-29-31-8-10-28 30-10Zm151 135 29-17 41 10 20 29-9 32-31 5-12 24-31-6-8-31-25-14 26-32Zm100-158 34-14 28 19-6 26-36 10-26-17 6-24Z"/>
+        <path class="cuba-island" d="M205 565c45-20 93-28 142-25 42 2 79 10 122 4 30-4 60-16 91-11 12 2 20 9 16 17-4 8-25 10-40 13-32 7-59 23-94 25-48 3-85-10-128-8-33 1-66 11-100 9-17-1-30-9-9-24Z"/>
+        <path class="island-chain" d="M588 601c13 1 20 7 27 14m15 12 8 7m12 6 9 5"/>
+        <circle class="origin-halo" cx="350" cy="559" r="29"/>
+        <circle class="origin-node" cx="350" cy="559" r="7"/>
+        <path class="route route-primary" d="M350 559C535 382 666 296 838 281" marker-end="url(#route-arrow)"/>
+        <path class="route route-secondary" d="M350 559C575 604 676 599 830 524" marker-end="url(#route-arrow)"/>
+        <path class="route route-secondary" d="M350 559C596 478 690 411 813 409" marker-end="url(#route-arrow)"/>
+        <circle class="network-node" cx="851" cy="279" r="6"/>
+        <circle class="network-node" cx="844" cy="520" r="6"/>
+        <circle class="network-node" cx="824" cy="407" r="6"/>
+        <text class="map-label origin-label" x="284" y="625">CUBA · LA HABANA</text>
+        <text class="map-label global-label" x="994" y="778">TECNOLOGÍA CUBANA · ALCANCE GLOBAL</text>
+      </g>
+
+      <g class="network-mobile">
+        <circle class="globe-outline" cx="720" cy="315" r="212"/>
+        <ellipse class="globe-line" cx="720" cy="315" rx="92" ry="212"/>
+        <ellipse class="globe-line" cx="720" cy="315" rx="166" ry="212"/>
+        <path class="globe-line" d="M524 254c118 56 274 56 392 0M510 315h420M524 376c118-56 274-56 392 0"/>
+        <path class="continent" d="m602 197 26-28 37-11 22 14-4 24 22 14-9 22-33 3-16 23-26-5-9-22-23-6-8-21 22-7Zm112 110 22-13 31 8 15 21-7 24-23 4-9 18-23-5-6-23-19-10 19-24Z"/>
+        <path class="cuba-island" d="M548 641c34-15 70-21 107-19 31 2 59 8 91 3 22-3 45-12 68-8 9 1 15 7 12 13-3 6-19 8-30 10-24 6-44 17-70 19-36 2-64-8-96-6-25 0-50 8-76 7-12-1-22-7-6-19Z"/>
+        <path class="island-chain" d="M834 668c9 1 15 5 20 10m11 9 7 6m9 4 7 4"/>
+        <circle class="origin-halo" cx="673" cy="634" r="25"/>
+        <circle class="origin-node" cx="673" cy="634" r="6"/>
+        <path class="route route-primary" d="M675 616C622 544 608 478 635 412" marker-end="url(#route-arrow)"/>
+        <path class="route route-secondary" d="M688 613C758 541 799 475 804 414" marker-end="url(#route-arrow)"/>
+        <path class="route route-secondary" d="M673 604C673 544 688 477 706 425" marker-end="url(#route-arrow)"/>
+        <circle class="network-node" cx="637" cy="399" r="5"/>
+        <circle class="network-node" cx="805" cy="399" r="5"/>
+        <circle class="network-node" cx="708" cy="410" r="5"/>
+        <text class="map-label global-label" x="720" y="84" text-anchor="middle">RED GLOBAL</text>
+        <text class="map-label origin-label" x="720" y="706" text-anchor="middle">CUBA · LA HABANA</text>
+        <text class="map-label global-label" x="720" y="757" text-anchor="middle">TECNOLOGÍA CUBANA · MUNDO</text>
+      </g>
+    </svg>
+  </div>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="#inicio" aria-label="CFT — Cuba Fashion Technologies, inicio">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 40" fill="none">
+            <path d="M3 21c4-4 9-6 16-6 6-6 17-8 27-3 5-1 10-1 15 1l-4 4-10 2c-2 4-6 7-12 7l-4 6-5-2 3-5c-6 0-11-1-16-3l-8 6-4-2 5-6-7 1Z" fill="currentColor"/>
+            <path d="M23 14c7-4 15-4 22 0l-4 5-13 1-7-3 2-3Z" fill="var(--accent)"/>
+            <path d="m26 11 2-3m5 2 1-3m5 4 2-2m12 7 1-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            <circle cx="55" cy="14" r="1" fill="var(--surface)"/>
+            <path d="M10 20h8m31 2 7-1" stroke="var(--surface)" stroke-width="1" stroke-linecap="round" opacity=".8"/>
+          </svg>
+        </span>
+        <span class="brand-name">CFT<span>Cuba Fashion Technologies</span></span>
+      </a>
+
+      <button class="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-navigation">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <nav class="nav-links" id="main-navigation" aria-label="Navegación principal">
+        <a href="#inicio">Inicio</a>
+        <a href="#servicios">Servicios</a>
+        <a href="#tienda">Tienda</a>
+        <a href="#noticias">Noticias</a>
+        <a href="#nosotros">Nosotros</a>
+        <button class="theme-toggle" type="button" aria-label="Cambiar a modo oscuro" aria-pressed="false" title="Cambiar a modo oscuro">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/>
+            <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.5 8.5 0 1 0 20.2 15.2Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="theme-toggle-label">Oscuro</span>
+        </button>
+        <a class="button nav-contact" href="https://wa.me/5350727220" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp al +53 50727220">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M20 11.6a8 8 0 0 1-11.8 7L4 20l1.4-4A8 8 0 1 1 20 11.6Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M9 8.5c.3-.5.5-.5.8-.5h.4c.2 0 .4.1.5.4l.6 1.4c.1.3.1.5-.1.7l-.5.6c-.2.2-.2.4 0 .7.5.8 1.1 1.4 1.9 1.8.3.2.5.2.7-.1l.6-.7c.2-.2.4-.2.7-.1l1.3.6c.3.1.4.3.4.5 0 .5-.2 1.1-.7 1.4-.5.4-1.1.6-1.8.5-1-.1-2.3-.8-3.4-1.8-1.3-1.2-2.1-2.6-2.2-3.6-.1-.7.2-1.3.8-1.8Z" fill="currentColor"/>
+          </svg>
+          Hablemos
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="container">
+        <div class="hero-inner">
+          <span class="eyebrow">Tecnología con identidad</span>
+          <h1>Diseñamos lo que viene. <span class="accent-text">Construimos el futuro.</span></h1>
+          <p class="hero-copy">Hardware de alto rendimiento, software a medida y consultoría tecnológica para convertir grandes ideas en soluciones reales.</p>
+          <div class="hero-actions">
+            <a class="button" href="#servicios">
+              Explorar servicios
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <a class="button button-outline" href="https://wa.me/5350727220" target="_blank" rel="noopener noreferrer">Conversemos</a>
+          </div>
+          <div class="hero-note">Ingeniería precisa. Visión sin límites.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-muted" id="servicios">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Lo que hacemos</span>
+            <h2>Un ecosistema.<br>Muchas posibilidades.</h2>
+          </div>
+          <p class="section-intro">Combinamos experiencia técnica y pensamiento estratégico para crear tecnología que impulsa tu siguiente paso.</p>
+        </div>
+
+        <div class="service-grid">
+          <article class="service-card">
+            <div class="icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M8 20h8m-4-4v4m-5-9h2m2-3h2m2 5h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Hardware &amp; ensamblaje</h3>
+            <p>Computadoras y equipos de alto rendimiento, configurados a la medida de tus proyectos, necesidades y presupuesto.</p>
+          </article>
+
+          <article class="service-card">
+            <div class="icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="m8 7-5 5 5 5m8-10 5 5-5 5m-2-13-4 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Desarrollo de software</h3>
+            <p>Aplicaciones web y soluciones digitales funcionales, cuidadas en cada detalle y preparadas para crecer contigo.</p>
+          </article>
+
+          <article class="service-card">
+            <div class="icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.64 5.64l2.12 2.12m8.48 8.48 2.12 2.12m0-12.72-2.12 2.12m-8.48 8.48-2.12 2.12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="12" cy="12" r="1.4" fill="currentColor"/>
+              </svg>
+            </div>
+            <h3>Innovación &amp; consultoría</h3>
+            <p>Orientación experta para optimizar tu infraestructura, tomar mejores decisiones y resolver retos técnicos complejos.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="tienda">
+      <div class="container store-section">
+        <div class="store-copy">
+          <span class="eyebrow">Compra online</span>
+          <h2>La energía que necesitas, en un solo lugar.</h2>
+          <p>Visita nuestra tienda y encuentra baterías y soluciones de energía en Baterías Habana.</p>
+        </div>
+        <a class="store-card" href="https://cubanfashioner-del.github.io/baterias-habana/" target="_blank" rel="noopener noreferrer" aria-label="Visitar la tienda Baterías Habana, se abre en una pestaña nueva">
+          <span class="store-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="7" width="17" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M20 10h1.5v4H20M10 9.5l-2 3h3l-1 2m4-5-2 3h3l-1 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="store-card-copy">
+            <strong>Baterías Habana</strong>
+            <span>Explora la tienda online</span>
+          </span>
+          <svg class="store-arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M14 4h6v6m-1-5-9 9m-2-7H5a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </section>
+
+    <section class="section" id="noticias">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Ideas en movimiento</span>
+            <h2>Radar tecnológico.</h2>
+          </div>
+          <p class="section-intro">Perspectivas sobre las herramientas y tendencias que están transformando la industria.</p>
+        </div>
+
+        <div class="news-grid">
+          <article class="news-card">
+            <div class="news-meta">
+              <span class="tag">Inteligencia artificial</span>
+              <time datetime="2026-10">En tendencia</time>
+            </div>
+            <h3>De la IA generativa a los agentes: el nuevo flujo de trabajo</h3>
+            <p>Los sistemas capaces de planificar y ejecutar tareas están redefiniendo cómo los equipos integran inteligencia artificial en sus procesos.</p>
+            <a class="text-link" href="https://www.nist.gov/artificial-intelligence" target="_blank" rel="noopener noreferrer">
+              Explorar el tema
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </article>
+
+          <article class="news-card">
+            <div class="news-meta">
+              <span class="tag">Hardware</span>
+              <time datetime="2026-10">En tendencia</time>
+            </div>
+            <h3>La eficiencia también es alto rendimiento</h3>
+            <p>Elegir componentes equilibrados permite construir estaciones potentes, silenciosas y más eficientes para trabajar y crear.</p>
+            <a class="text-link" href="https://www.intel.com/content/www/us/en/gaming/resources/how-to-build-a-gaming-pc.html" target="_blank" rel="noopener noreferrer">
+              Explorar el tema
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </article>
+
+          <article class="news-card">
+            <div class="news-meta">
+              <span class="tag">Software</span>
+              <time datetime="2026-10">En tendencia</time>
+            </div>
+            <h3>Experiencias web más rápidas, accesibles y resilientes</h3>
+            <p>Una buena arquitectura prioriza velocidad, accesibilidad y una experiencia consistente en todos los dispositivos.</p>
+            <a class="text-link" href="https://web.dev/" target="_blank" rel="noopener noreferrer">
+              Explorar el tema
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-muted" id="nosotros">
+      <div class="container about-grid">
+        <div class="about-emblem" aria-hidden="true">
+          <svg viewBox="0 0 180 100" fill="none">
+            <path d="M8 52c12-12 26-17 46-16 16-17 48-21 76-8 14-3 27-2 40 3l-11 11-27 5c-7 12-17 18-33 19l-11 17-13-5 8-13c-16 0-31-3-45-9L16 72 7 66l13-16-12 2Z" fill="currentColor"/>
+            <path d="M64 34c18-12 40-12 61-2l-11 14-37 4-19-8 6-8Z" fill="var(--accent)"/>
+            <path d="m73 25 5-8m14 6 3-9m13 10 6-7m34 21 4-6" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="153" cy="37" r="3" fill="var(--surface)"/>
+            <path d="M27 50h22m85 8 20-4M40 38l4-5m7 6 4-5m4 6 4-4" stroke="var(--surface)" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+          </svg>
+        </div>
+        <div class="about-copy">
+          <span class="eyebrow">Nuestra esencia</span>
+          <h2>El cocodrilo evoluciona. La visión permanece.</h2>
+          <p>CFT — Cuba Fashion Technologies nace de una idea: unir carácter, creatividad y tecnología para abrir nuevos caminos. El cocodrilo de la marca representa esa evolución constante: una identidad que se adapta, explora y avanza.</p>
+          <p>Hoy llevamos esa energía al hardware, el desarrollo de software y la consultoría. Escuchamos cada reto, pensamos con visión de futuro y trabajamos para convertir posibilidades en soluciones concretas.</p>
+          <a class="text-link" href="https://wa.me/5350727220" target="_blank" rel="noopener noreferrer">
+            Conoce lo que podemos crear
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact-band" aria-label="Contacto">
+      <div class="container">
+        <div class="contact-panel">
+          <div>
+            <span class="eyebrow">Tu próximo proyecto empieza aquí</span>
+            <h2>¿Hablamos de tecnología?</h2>
+            <p>Cuéntanos tu idea. Estamos a un mensaje de distancia.</p>
+          </div>
+          <a class="button" href="https://wa.me/5350727220" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp al +53 50727220">
+            Escribir por WhatsApp
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-main">
+      <p class="footer-copy">© <span id="current-year">2026</span> CFT — Cuba Fashion Technologies. Todos los derechos reservados.</p>
+      <nav class="footer-links" aria-label="Enlaces legales">
+        <button type="button" data-modal="privacy-modal">Política de privacidad</button>
+        <button type="button" data-modal="terms-modal">Términos y condiciones</button>
+      </nav>
+    </div>
+  </footer>
+
+  <dialog class="modal" id="privacy-modal" aria-labelledby="privacy-title">
+    <div class="modal-content">
+      <div class="modal-head">
+        <div>
+          <span class="eyebrow">Información legal</span>
+          <h2 id="privacy-title">Política de privacidad</h2>
+        </div>
+        <button class="modal-close" type="button" aria-label="Cerrar Política de privacidad">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3>Información que recopilamos</h3>
+        <p>Este sitio es una página informativa estática. No incluye formularios, cuentas de usuario ni herramientas propias de analítica, y no recopila directamente datos personales a través de la navegación.</p>
+        <h3>Contacto mediante servicios externos</h3>
+        <p>Los enlaces de contacto abren WhatsApp y los enlaces editoriales pueden dirigir a sitios de terceros. Si eliges utilizarlos, esos servicios podrían procesar información conforme a sus propias políticas de privacidad; te recomendamos consultarlas antes de compartir datos.</p>
+        <h3>Uso de la información</h3>
+        <p>La información que decidas compartir voluntariamente por canales externos se utilizará para responder a tu consulta y dar seguimiento a la conversación.</p>
+        <h3>Actualizaciones</h3>
+        <p>Esta política puede actualizarse para reflejar cambios en el sitio o en los servicios ofrecidos. La versión publicada en esta página será la vigente.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="modal" id="terms-modal" aria-labelledby="terms-title">
+    <div class="modal-content">
+      <div class="modal-head">
+        <div>
+          <span class="eyebrow">Información legal</span>
+          <h2 id="terms-title">Términos y condiciones</h2>
+        </div>
+        <button class="modal-close" type="button" aria-label="Cerrar Términos y condiciones">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3>Uso del sitio</h3>
+        <p>Este sitio presenta información general sobre CFT — Cuba Fashion Technologies y sus servicios. Su contenido se ofrece únicamente con fines informativos y no constituye una oferta contractual.</p>
+        <h3>Servicios y cotizaciones</h3>
+        <p>El alcance, disponibilidad, precio y plazos de cualquier servicio se acordarán directamente con cada cliente antes de iniciar un proyecto. Una consulta o contacto no implica la aceptación de un encargo.</p>
+        <h3>Contenido y enlaces externos</h3>
+        <p>El contenido se proporciona de buena fe y puede modificarse sin previo aviso. Los enlaces a páginas de terceros se facilitan como referencia; CFT — Cuba Fashion Technologies no controla ni garantiza sus contenidos o servicios.</p>
+        <h3>Responsabilidad</h3>
+        <p>Se procura mantener el sitio disponible y actualizado, pero no se garantiza que el acceso sea ininterrumpido ni que toda la información esté libre de errores. El uso de los enlaces externos queda a criterio de cada visitante.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="../js/main.js" defer></script>
+</body>
+</html>
