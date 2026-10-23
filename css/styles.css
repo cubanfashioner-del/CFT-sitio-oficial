@@ -430,6 +430,24 @@
       background: var(--accent-soft);
     }
 
+    .nav-logout {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .nav-logout[hidden] {
+      display: none;
+    }
+
+    .auth-status {
+      max-width: 220px;
+      color: var(--danger, #b42318);
+      font-size: .78rem;
+    }
+
     .theme-toggle {
       display: inline-flex;
       min-width: 42px;

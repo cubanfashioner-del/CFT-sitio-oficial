@@ -8,6 +8,13 @@
       const modalTriggers = document.querySelectorAll("[data-modal]");
       const networkBackground = document.querySelector(".global-network svg");
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const accountLink = document.querySelector("#nav-account-link");
+      const accountLabel = document.querySelector("#nav-account-label");
+      const logoutButton = document.querySelector("#nav-logout");
+      const logoutLabel = document.querySelector("#nav-logout-label");
+      const authStatus = document.querySelector("#auth-status");
+      const supabaseUrl = "https://fzgkaolxngitwlatsusf.supabase.co";
+      const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6Z2thb2x4bmdpdHdsYXRzdXNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2OTE5MDAsImV4cCI6MjEwODI2NzkwMH0.l_l4MV9Scu7PTZLztGam8DP7HGRCh93fCosA4R3m5P4";
 
       year.textContent = String(new Date().getFullYear());
 
@@ -70,7 +77,7 @@
       });
 
       navigation.addEventListener("click", (event) => {
-        if (event.target.closest("a, .theme-toggle")) closeMenu();
+        if (event.target.closest("a, button")) closeMenu();
       });
 
       document.addEventListener("keydown", (event) => {
@@ -100,4 +107,64 @@
           }
         });
       });
+
+      const setAccountSession = (session) => {
+        const isSignedIn = Boolean(session);
+        accountLabel.textContent = isSignedIn ? "Mi cuenta" : "Iniciar sesión";
+        accountLink.setAttribute(
+          "aria-label",
+          isSignedIn ? `Cuenta de ${session.user.email}` : "Iniciar sesión o crear una cuenta"
+        );
+        accountLink.title = isSignedIn ? session.user.email : "";
+        logoutButton.hidden = !isSignedIn;
+      };
+
+      async function initializeAuth() {
+        try {
+          const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+          const storageKey = `sb-${new URL(supabaseUrl).hostname.split(".")[0]}-auth-token`;
+          const storage = localStorage.getItem(storageKey)
+            ? localStorage
+            : sessionStorage.getItem(storageKey)
+              ? sessionStorage
+              : localStorage;
+          const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+            auth: {
+              autoRefreshToken: true,
+              detectSessionInUrl: true,
+              persistSession: true,
+              storage
+            }
+          });
+          const { data, error } = await supabase.auth.getSession();
+          if (error) throw error;
+          setAccountSession(data.session);
+          supabase.auth.onAuthStateChange((_event, session) => setAccountSession(session));
+
+          logoutButton.addEventListener("click", async () => {
+            logoutButton.disabled = true;
+            logoutLabel.textContent = "Cerrando sesión…";
+            authStatus.hidden = true;
+            authStatus.textContent = "";
+
+            try {
+              const { error: signOutError } = await supabase.auth.signOut();
+              if (signOutError) throw signOutError;
+            } catch (error) {
+              console.error("No se pudo cerrar la sesión de Supabase:", error);
+              authStatus.textContent = "No se pudo cerrar la sesión. Inténtalo de nuevo.";
+              authStatus.hidden = false;
+            } finally {
+              logoutButton.disabled = false;
+              logoutLabel.textContent = "Cerrar sesión";
+            }
+          });
+        } catch (error) {
+          console.error("No se pudo comprobar la sesión de Supabase:", error);
+          authStatus.textContent = "No se pudo comprobar el estado de la sesión.";
+          authStatus.hidden = false;
+        }
+      }
+
+      initializeAuth();
     })();
