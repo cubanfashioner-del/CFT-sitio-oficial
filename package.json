@@ -1,0 +1,11 @@
+{
+  "name": "cft-noticias",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node scripts/obtener_noticias.js"
+  },
+  "dependencies": {
+    "rss-parser": "^3.13.0"
+  }
+}

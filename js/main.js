@@ -9,6 +9,7 @@
       const networkBackground = document.querySelector(".global-network svg");
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
       const revealElements = document.querySelectorAll("[data-reveal]");
+      const newsSection = document.querySelector("#seccion-noticias");
       const uiHistoryKey = "cftUi";
       const accountLink = document.querySelector("#nav-account-link");
       const accountLabel = document.querySelector("#nav-account-label");
@@ -28,10 +29,12 @@
       const supabaseUrl = "https://fzgkaolxngitwlatsusf.supabase.co";
       const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6Z2thb2x4bmdpdHdsYXRzdXNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2OTE5MDAsImV4cCI6MjEwODI2NzkwMH0.l_l4MV9Scu7PTZLztGam8DP7HGRCh93fCosA4R3m5P4";
 
+      let revealObserver = null;
+
       if (reducedMotion.matches || !("IntersectionObserver" in window)) {
         revealElements.forEach((element) => element.classList.add("is-visible"));
       } else {
-        const revealObserver = new IntersectionObserver((entries, observer) => {
+        revealObserver = new IntersectionObserver((entries, observer) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
               entry.target.classList.add("is-visible");
@@ -45,6 +48,121 @@
 
         revealElements.forEach((element) => revealObserver.observe(element));
       }
+
+      async function loadNews() {
+        try {
+          const response = await fetch("../data/noticias.json", { cache: "no-cache" });
+          if (!response.ok) {
+            throw new Error(`La solicitud de noticias respondió con ${response.status}.`);
+          }
+
+          const news = await response.json();
+          if (!Array.isArray(news)) {
+            throw new TypeError("El archivo de noticias debe contener un arreglo JSON.");
+          }
+
+          const articles = news.filter((item) => (
+            item &&
+            typeof item.titulo === "string" &&
+            typeof item.url === "string" &&
+            toSafeHttpUrl(item.url)
+          ));
+          newsSection.replaceChildren();
+
+          if (articles.length === 0) {
+            newsSection.append(createNewsStatus("Aún no hay noticias publicadas."));
+            return;
+          }
+
+          articles.forEach((item) => {
+            const article = document.createElement("article");
+            article.className = "news-card";
+            article.dataset.reveal = "";
+
+            const image = document.createElement("img");
+            image.className = "news-card-image";
+            image.alt = `Imagen de ${item.titulo}`;
+            image.loading = "lazy";
+            image.src = toSafeHttpUrl(item.imagen) || defaultNewsImage;
+            image.addEventListener("error", () => {
+              image.src = defaultNewsImage;
+            }, { once: true });
+            article.append(image);
+
+            const meta = document.createElement("div");
+            meta.className = "news-meta";
+            const source = document.createElement("span");
+            source.className = "tag";
+            source.textContent = new URL(item.url).hostname.replace(/^www\./, "");
+            meta.append(source);
+
+            const published = document.createElement("time");
+            const date = new Date(item.fecha);
+            if (item.fecha && !Number.isNaN(date.getTime())) {
+              published.dateTime = date.toISOString();
+              published.textContent = new Intl.DateTimeFormat("es", {
+                dateStyle: "medium",
+              }).format(date);
+            } else {
+              published.textContent = "Fecha no disponible";
+            }
+            meta.append(published);
+            article.append(meta);
+
+            const title = document.createElement("h3");
+            title.className = "news-card-title";
+            const link = document.createElement("a");
+            link.href = toSafeHttpUrl(item.url);
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = item.titulo;
+            title.append(link);
+            article.append(title);
+
+            const description = document.createElement("p");
+            description.textContent = typeof item.descripcion === "string"
+              ? item.descripcion || "Descripción no disponible."
+              : "Descripción no disponible.";
+            article.append(description);
+            newsSection.append(article);
+          });
+
+          if (revealObserver) {
+            newsSection.querySelectorAll("[data-reveal]").forEach((element) => {
+              revealObserver.observe(element);
+            });
+          } else {
+            newsSection.querySelectorAll("[data-reveal]").forEach((element) => {
+              element.classList.add("is-visible");
+            });
+          }
+        } catch (error) {
+          console.error("No se pudieron cargar las noticias:", error);
+          newsSection.replaceChildren(createNewsStatus("No se pudieron cargar las noticias. Inténtalo más tarde."));
+        } finally {
+          newsSection.setAttribute("aria-busy", "false");
+        }
+      }
+
+      const defaultNewsImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%231b4332'/%3E%3Cpath d='M0 360 220 180l130 110 120-150 330 250v60H0Z' fill='%23b48a3d' fill-opacity='.45'/%3E%3Ctext x='400' y='245' fill='white' font-family='sans-serif' font-size='54' text-anchor='middle'%3ECFT%3C/text%3E%3C/svg%3E";
+
+      function toSafeHttpUrl(value) {
+        try {
+          const url = new URL(value);
+          return url.protocol === "http:" || url.protocol === "https:" ? url.href : "";
+        } catch {
+          return "";
+        }
+      }
+
+      function createNewsStatus(message) {
+        const status = document.createElement("p");
+        status.className = "news-status";
+        status.textContent = message;
+        return status;
+      }
+
+      if (newsSection) loadNews();
 
       year.textContent = String(new Date().getFullYear());
 

@@ -814,6 +814,29 @@
       padding: 25px;
     }
 
+    .news-card-image {
+      width: calc(100% + 50px);
+      aspect-ratio: 16 / 9;
+      margin: -25px -25px 20px;
+      border-radius: var(--radius) var(--radius) 0 0;
+      object-fit: cover;
+    }
+
+    .news-card-title a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .news-card-title a:hover {
+      color: var(--accent-secondary);
+    }
+
+    .news-status {
+      grid-column: 1 / -1;
+      margin: 0;
+      color: var(--muted);
+    }
+
     .news-meta {
       display: flex;
       align-items: center;
