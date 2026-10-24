@@ -8,6 +8,7 @@
       const modalTriggers = document.querySelectorAll("[data-modal]");
       const networkBackground = document.querySelector(".global-network svg");
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const revealElements = document.querySelectorAll("[data-reveal]");
       const uiHistoryKey = "cftUi";
       const accountLink = document.querySelector("#nav-account-link");
       const accountLabel = document.querySelector("#nav-account-label");
@@ -26,6 +27,24 @@
       let supabaseClient = null;
       const supabaseUrl = "https://fzgkaolxngitwlatsusf.supabase.co";
       const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6Z2thb2x4bmdpdHdsYXRzdXNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2OTE5MDAsImV4cCI6MjEwODI2NzkwMH0.l_l4MV9Scu7PTZLztGam8DP7HGRCh93fCosA4R3m5P4";
+
+      if (reducedMotion.matches || !("IntersectionObserver" in window)) {
+        revealElements.forEach((element) => element.classList.add("is-visible"));
+      } else {
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              observer.unobserve(entry.target);
+            }
+          });
+        }, {
+          threshold: 0.15,
+          rootMargin: "0px 0px -30px 0px",
+        });
+
+        revealElements.forEach((element) => revealObserver.observe(element));
+      }
 
       year.textContent = String(new Date().getFullYear());
 

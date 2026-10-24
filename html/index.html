@@ -10,6 +10,7 @@
   <meta property="og:description" content="Hardware de alto rendimiento, software y consultoría para construir lo que viene.">
   <title>CFT — Cuba Fashion Technologies | Tecnología con visión</title>
   <script>
+    document.documentElement.classList.add("js");
     try {
       const savedTheme = localStorage.getItem("cft-theme") || localStorage.getItem("cuban-fashioner-tech-theme");
       if (savedTheme === "light" || savedTheme === "dark") {
@@ -128,9 +129,9 @@
     <section class="hero" id="inicio">
       <div class="container">
         <div class="hero-inner">
-          <span class="eyebrow">Tecnología con identidad</span>
-          <h1>Diseñamos lo que viene. <span class="accent-text">Construimos el futuro.</span></h1>
-          <p class="hero-copy">Hardware de alto rendimiento, software a medida y consultoría tecnológica para convertir grandes ideas en soluciones reales.</p>
+          <span class="eyebrow" data-reveal>Tecnología con identidad</span>
+          <h1 data-reveal>Diseñamos lo que viene. <span class="accent-text">Construimos el futuro.</span></h1>
+          <p class="hero-copy" data-reveal>Hardware de alto rendimiento, software a medida y consultoría tecnológica para convertir grandes ideas en soluciones reales.</p>
           <div class="hero-actions">
             <a class="button" href="#servicios">
               Explorar servicios
@@ -140,7 +141,7 @@
             </a>
             <a class="button button-outline" href="https://wa.me/5350727220" target="_blank" rel="noopener noreferrer">Conversemos</a>
           </div>
-          <div class="hero-note">Ingeniería precisa. Visión sin límites.</div>
+          <div class="hero-note" data-reveal>Ingeniería precisa. Visión sin límites.</div>
         </div>
       </div>
     </section>
@@ -149,10 +150,10 @@
       <div class="container">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Lo que hacemos</span>
-            <h2>Un ecosistema.<br>Muchas posibilidades.</h2>
+            <span class="eyebrow" data-reveal>Lo que hacemos</span>
+            <h2 data-reveal>Un ecosistema.<br>Muchas posibilidades.</h2>
           </div>
-          <p class="section-intro">Combinamos experiencia técnica y pensamiento estratégico para crear tecnología que impulsa tu siguiente paso.</p>
+          <p class="section-intro" data-reveal>Combinamos experiencia técnica y pensamiento estratégico para crear tecnología que impulsa tu siguiente paso.</p>
         </div>
 
         <div class="service-grid">
@@ -163,8 +164,8 @@
                 <path d="M8 20h8m-4-4v4m-5-9h2m2-3h2m2 5h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
               </svg>
             </div>
-            <h3>Hardware &amp; ensamblaje</h3>
-            <p>Computadoras y equipos de alto rendimiento, configurados a la medida de tus proyectos, necesidades y presupuesto.</p>
+            <h3 data-reveal>Hardware &amp; ensamblaje</h3>
+            <p data-reveal>Computadoras y equipos de alto rendimiento, configurados a la medida de tus proyectos, necesidades y presupuesto.</p>
           </article>
 
           <article class="service-card">
@@ -173,8 +174,8 @@
                 <path d="m8 7-5 5 5 5m8-10 5 5-5 5m-2-13-4 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <h3>Desarrollo de software</h3>
-            <p>Aplicaciones web y soluciones digitales funcionales, cuidadas en cada detalle y preparadas para crecer contigo.</p>
+            <h3 data-reveal>Desarrollo de software</h3>
+            <p data-reveal>Aplicaciones web y soluciones digitales funcionales, cuidadas en cada detalle y preparadas para crecer contigo.</p>
           </article>
 
           <article class="service-card">
@@ -185,8 +186,8 @@
                 <circle cx="12" cy="12" r="1.4" fill="currentColor"/>
               </svg>
             </div>
-            <h3>Innovación &amp; consultoría</h3>
-            <p>Orientación experta para optimizar tu infraestructura, tomar mejores decisiones y resolver retos técnicos complejos.</p>
+            <h3 data-reveal>Innovación &amp; consultoría</h3>
+            <p data-reveal>Orientación experta para optimizar tu infraestructura, tomar mejores decisiones y resolver retos técnicos complejos.</p>
           </article>
         </div>
       </div>
@@ -195,9 +196,9 @@
     <section class="section" id="tienda">
       <div class="container store-section">
         <div class="store-copy">
-          <span class="eyebrow">Compra online</span>
-          <h2>La energía que necesitas, en un solo lugar.</h2>
-          <p>Visita nuestra tienda y encuentra baterías y soluciones de energía en Baterías Habana.</p>
+          <span class="eyebrow" data-reveal>Compra online</span>
+          <h2 data-reveal>La energía que necesitas, en un solo lugar.</h2>
+          <p data-reveal>Visita nuestra tienda y encuentra baterías y soluciones de energía en Baterías Habana.</p>
         </div>
         <a class="store-card" href="https://cubanfashioner-del.github.io/baterias-habana/" target="_blank" rel="noopener noreferrer" aria-label="Visitar la tienda Baterías Habana, se abre en una pestaña nueva">
           <span class="store-icon" aria-hidden="true">
@@ -221,10 +222,10 @@
       <div class="container">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Ideas en movimiento</span>
-            <h2>Radar tecnológico.</h2>
+            <span class="eyebrow" data-reveal>Ideas en movimiento</span>
+            <h2 data-reveal>Radar tecnológico.</h2>
           </div>
-          <p class="section-intro">Perspectivas sobre las herramientas y tendencias que están transformando la industria.</p>
+          <p class="section-intro" data-reveal>Perspectivas sobre las herramientas y tendencias que están transformando la industria.</p>
         </div>
 
         <div class="news-grid">
@@ -233,8 +234,8 @@
               <span class="tag">Inteligencia artificial</span>
               <time datetime="2026-10">En tendencia</time>
             </div>
-            <h3>De la IA generativa a los agentes: el nuevo flujo de trabajo</h3>
-            <p>Los sistemas capaces de planificar y ejecutar tareas están redefiniendo cómo los equipos integran inteligencia artificial en sus procesos.</p>
+            <h3 data-reveal>De la IA generativa a los agentes: el nuevo flujo de trabajo</h3>
+            <p data-reveal>Los sistemas capaces de planificar y ejecutar tareas están redefiniendo cómo los equipos integran inteligencia artificial en sus procesos.</p>
             <a class="text-link" href="https://www.nist.gov/artificial-intelligence" target="_blank" rel="noopener noreferrer">
               Explorar el tema
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -248,8 +249,8 @@
               <span class="tag">Hardware</span>
               <time datetime="2026-10">En tendencia</time>
             </div>
-            <h3>La eficiencia también es alto rendimiento</h3>
-            <p>Elegir componentes equilibrados permite construir estaciones potentes, silenciosas y más eficientes para trabajar y crear.</p>
+            <h3 data-reveal>La eficiencia también es alto rendimiento</h3>
+            <p data-reveal>Elegir componentes equilibrados permite construir estaciones potentes, silenciosas y más eficientes para trabajar y crear.</p>
             <a class="text-link" href="https://www.intel.com/content/www/us/en/gaming/resources/how-to-build-a-gaming-pc.html" target="_blank" rel="noopener noreferrer">
               Explorar el tema
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -263,8 +264,8 @@
               <span class="tag">Software</span>
               <time datetime="2026-10">En tendencia</time>
             </div>
-            <h3>Experiencias web más rápidas, accesibles y resilientes</h3>
-            <p>Una buena arquitectura prioriza velocidad, accesibilidad y una experiencia consistente en todos los dispositivos.</p>
+            <h3 data-reveal>Experiencias web más rápidas, accesibles y resilientes</h3>
+            <p data-reveal>Una buena arquitectura prioriza velocidad, accesibilidad y una experiencia consistente en todos los dispositivos.</p>
             <a class="text-link" href="https://web.dev/" target="_blank" rel="noopener noreferrer">
               Explorar el tema
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -288,10 +289,10 @@
           </svg>
         </div>
         <div class="about-copy">
-          <span class="eyebrow">Nuestra esencia</span>
-          <h2>El cocodrilo evoluciona. La visión permanece.</h2>
-          <p>CFT — Cuba Fashion Technologies nace de una idea: unir carácter, creatividad y tecnología para abrir nuevos caminos. El cocodrilo de la marca representa esa evolución constante: una identidad que se adapta, explora y avanza.</p>
-          <p>Hoy llevamos esa energía al hardware, el desarrollo de software y la consultoría. Escuchamos cada reto, pensamos con visión de futuro y trabajamos para convertir posibilidades en soluciones concretas.</p>
+          <span class="eyebrow" data-reveal>Nuestra esencia</span>
+          <h2 data-reveal>El cocodrilo evoluciona. La visión permanece.</h2>
+          <p data-reveal>CFT — Cuba Fashion Technologies nace de una idea: unir carácter, creatividad y tecnología para abrir nuevos caminos. El cocodrilo de la marca representa esa evolución constante: una identidad que se adapta, explora y avanza.</p>
+          <p data-reveal>Hoy llevamos esa energía al hardware, el desarrollo de software y la consultoría. Escuchamos cada reto, pensamos con visión de futuro y trabajamos para convertir posibilidades en soluciones concretas.</p>
           <a class="text-link" href="https://wa.me/5350727220" target="_blank" rel="noopener noreferrer">
             Conoce lo que podemos crear
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -306,9 +307,9 @@
       <div class="container">
         <div class="contact-panel">
           <div>
-            <span class="eyebrow">Tu próximo proyecto empieza aquí</span>
-            <h2>¿Hablamos de tecnología?</h2>
-            <p>Cuéntanos tu idea. Estamos a un mensaje de distancia.</p>
+            <span class="eyebrow" data-reveal>Tu próximo proyecto empieza aquí</span>
+            <h2 data-reveal>¿Hablamos de tecnología?</h2>
+            <p data-reveal>Cuéntanos tu idea. Estamos a un mensaje de distancia.</p>
           </div>
           <a class="button" href="https://wa.me/5350727220" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp al +53 50727220">
             Escribir por WhatsApp
