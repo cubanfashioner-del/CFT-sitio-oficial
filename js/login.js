@@ -25,6 +25,7 @@ let supabaseClient = null;
 let clientPersistence = null;
 let createClientPromise = null;
 let isRegisterMode = false;
+const accountModeHistoryKey = "cftAccountMode";
 
 currentYear.textContent = String(new Date().getFullYear());
 
@@ -59,6 +60,23 @@ function updateAccountMode(registerMode) {
   forgotPasswordLink.hidden = registerMode;
   rememberOption.hidden = registerMode;
   setMessage("");
+}
+
+function navigateAccountMode(registerMode) {
+  const mode = registerMode ? "register" : "login";
+  if (history.state?.[accountModeHistoryKey] === mode) return;
+
+  const state = history.state && typeof history.state === "object" ? history.state : {};
+  history.pushState({ ...state, [accountModeHistoryKey]: mode }, "", window.location.href);
+  updateAccountMode(registerMode);
+}
+
+window.addEventListener("popstate", (event) => {
+  updateAccountMode(event.state?.[accountModeHistoryKey] === "register");
+});
+
+if (history.state?.[accountModeHistoryKey] === "register") {
+  updateAccountMode(true);
 }
 
 async function getSupabaseClient(rememberSession) {
@@ -121,7 +139,7 @@ passwordToggle.addEventListener("click", () => {
 accountPrompt.addEventListener("click", (event) => {
   if (event.target.closest("#account-toggle")) {
     event.preventDefault();
-    updateAccountMode(!isRegisterMode);
+    navigateAccountMode(!isRegisterMode);
   }
 });
 

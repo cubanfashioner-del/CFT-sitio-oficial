@@ -1070,6 +1070,98 @@
       margin-top: 0;
     }
 
+    .account-modal {
+      width: min(480px, calc(100% - 32px));
+    }
+
+    .account-detail {
+      display: grid;
+      gap: 4px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface-raised);
+    }
+
+    .account-detail + .account-detail {
+      margin-top: 10px;
+    }
+
+    .account-detail span,
+    .account-password-form label {
+      color: var(--text-muted);
+      font-size: .78rem;
+    }
+
+    .account-detail strong {
+      overflow-wrap: anywhere;
+      color: var(--text-main);
+      font-size: .92rem;
+      font-weight: 600;
+    }
+
+    .account-password-note {
+      margin: 14px 0;
+      font-size: .8rem;
+    }
+
+    .account-change-password,
+    .account-password-submit {
+      cursor: pointer;
+    }
+
+    .account-password-form {
+      display: grid;
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .account-password-form[hidden],
+    .account-status[hidden] {
+      display: none;
+    }
+
+    .account-password-form input {
+      width: 100%;
+      min-height: 46px;
+      margin-bottom: 7px;
+      padding: 0 13px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--surface-raised);
+      color: var(--text-main);
+      font: inherit;
+    }
+
+    .account-password-form input:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .account-password-submit {
+      justify-self: start;
+    }
+
+    .account-status {
+      margin: 14px 0 0;
+      color: var(--text-main);
+      font-size: .82rem;
+    }
+
+    .account-status[data-state="error"] {
+      color: #b42318;
+    }
+
+    .account-status[data-state="success"] {
+      color: var(--accent-secondary);
+    }
+
+    .account-logout {
+      margin-top: 22px;
+      padding: 8px 0;
+      cursor: pointer;
+    }
+
     @media (max-width: 780px) {
       .network-desktop {
         display: none;

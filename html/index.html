@@ -119,14 +119,6 @@
           </span>
           <span id="nav-account-label">Iniciar sesión</span>
         </a>
-        <button class="nav-account nav-logout" id="nav-logout" type="button" hidden>
-          <span class="nav-account-avatar" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M10 17l5-5-5-5m5 5H3m10-9h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <span id="nav-logout-label">Cerrar sesión</span>
-        </button>
         <span class="auth-status" id="auth-status" role="status" aria-live="polite" hidden></span>
       </nav>
     </div>
@@ -328,6 +320,52 @@
       </div>
     </section>
   </main>
+
+  <dialog class="modal account-modal" id="account-modal" aria-labelledby="account-modal-title">
+    <div class="modal-content">
+      <div class="modal-head">
+        <div>
+          <span class="eyebrow">Tu espacio CFT</span>
+          <h2 id="account-modal-title">Mi cuenta</h2>
+        </div>
+        <button class="modal-close" type="button" aria-label="Cerrar">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="account-detail">
+          <span>Correo electrónico</span>
+          <strong id="account-email"></strong>
+        </div>
+        <div class="account-detail">
+          <span>Contraseña</span>
+          <strong aria-label="Contraseña oculta">••••••••••••</strong>
+        </div>
+        <p class="account-password-note">Tu contraseña actual no puede consultarse. Puedes establecer una nueva cuando quieras.</p>
+        <button class="button button-outline account-change-password" id="account-change-password" type="button" aria-expanded="false" aria-controls="account-password-form">
+          Cambiar contraseña
+        </button>
+        <form class="account-password-form" id="account-password-form" hidden>
+          <label for="account-new-password">Nueva contraseña</label>
+          <input id="account-new-password" name="new-password" type="password" autocomplete="new-password" minlength="6" required>
+          <label for="account-confirm-password">Confirmar nueva contraseña</label>
+          <input id="account-confirm-password" name="confirm-password" type="password" autocomplete="new-password" minlength="6" required>
+          <button class="button account-password-submit" id="account-password-submit" type="submit">Guardar contraseña</button>
+        </form>
+        <p class="account-status" id="account-status" role="status" aria-live="polite" hidden></p>
+        <button class="nav-account nav-logout account-logout" id="nav-logout" type="button">
+          <span class="nav-account-avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M10 17l5-5-5-5m5 5H3m10-9h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span id="nav-logout-label">Cerrar sesión</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
 
   <footer class="site-footer">
     <div class="container footer-main">
