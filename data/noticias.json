@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": "54060c5c0e82a5b59256",
+    "titulo": "El Inspector General del Pentágono se niega a investigar la desaceleración de Starlink/Starshield en Ucrania",
+    "resumen": "El inspector general rechazó la solicitud de los senadores demócratas y republicanos.",
+    "contenido": "La oficina del inspector general del Pentágono rechazó una solicitud de los senadores estadounidenses para investigar las restricciones recientemente impuestas al uso de la red satelital de SpaceX por parte del ejército ucraniano.\n\nUcrania, que utiliza el servicio Starlink de SpaceX y la versión militar conocida como Starshield, dijo a principios de este mes que los drones militares perdieron la conectividad satelital cuando viajaban a más de 161 kilómetros por hora (100 millas por hora). El límite se eliminó después de unos 10 días.\n\nCinco senadores demócratas y cuatro republicanos enviaron una carta el 15 de octubre al inspector general del Departamento de Defensa, Platte Moring, solicitando una investigación sobre las interrupciones reportadas de Starlink y Starshield. La carta preguntaba, entre otras cosas, \"si alguna restricción a los servicios de Starlink o Starshield fue dirigida, autorizada o implementada por SpaceX, el Departamento de Defensa u otras entidades del gobierno de los EE. UU.; si dichas restricciones fueron consistentes con los contratos aplicables del gobierno de los Estados Unidos, y qué acciones, si las hubiera, tomó el Departamento de Defensa en respuesta \".\n\nLeer el artículo completo\n\nComentarios",
+    "fuente": "Ars Technica",
+    "fecha": "29 de octubre de 2026",
+    "imagen": "https://cdn.arstechnica.net/wp-content/uploads/2026/10/starlink-ukraine-1152x648-1792605015.jpg"
+  },
+  {
+    "id": "600c52b4c2466a9125b2",
+    "titulo": "Trump declara que el robot importa una amenaza para la seguridad nacional",
+    "resumen": "El presidente ordena conversaciones comerciales sobre robots de fábrica fabricados en el extranjero, amenaza con aranceles.",
+    "contenido": "El presidente Donald Trump ha declarado que las importaciones de robots industriales fabricados en el extranjero son una amenaza para la seguridad nacional, ordenando nuevas negociaciones de Estados Unidos con socios comerciales al tiempo que ofrece la posibilidad de imponer nuevos aranceles a dichas importaciones de robots en el futuro.\n\nEmitida el 28 de octubre, la proclamación presidencial de Trump representa un mayor escrutinio gubernamental de los robots industriales fabricados en el extranjero que podrían complicar las operaciones de fabricación de las principales corporaciones estadounidenses que dependen de dichos robots. Esas compañías incluyen a los fabricantes de automóviles de Detroit General Motors y Ford, al fabricante de vehículos eléctricos Tesla y a gigantes aeroespaciales y de defensa como Boeing y Lockheed Martin.\n\nLa proclamación de Trump describe los robots y la maquinaria industrial como cruciales para producir sistemas de armas militares estadounidenses, además de representar una \"fuerza motriz\" detrás de todos los sectores de infraestructura crítica dentro de la economía estadounidense. La proclamación cita una investigación realizada por el Secretario de Comercio de los Estados Unidos, Howard Lutnick, que descubrió que las importaciones estadounidenses de dichos robots \"plantean[] riesgos para la base industrial de los Estados Unidos y amenazan a largo plazo competitividad de los Estados Unidos en un sector que es cada vez más vital para la seguridad nacional ”.\n\nLeer el artículo completo\n\nComentarios",
+    "fuente": "Ars Technica",
+    "fecha": "29 de octubre de 2026",
+    "imagen": "https://cdn.arstechnica.net/wp-content/uploads/2026/10/6k_quick_delivery_robots-1152x648.jpg"
+  }
+]
