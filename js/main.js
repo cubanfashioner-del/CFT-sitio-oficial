@@ -67,13 +67,15 @@
 
           const articles = news.filter((item) => (
             item &&
-            Object.keys(item).length === 6 &&
+            Object.keys(item).length === 7 &&
             typeof item.id === "string" &&
             typeof item.titulo === "string" &&
             typeof item.resumen === "string" &&
             typeof item.contenido === "string" &&
             typeof item.fuente === "string" &&
-            typeof item.fecha === "string"
+            typeof item.fecha === "string" &&
+            typeof item.imagen === "string" &&
+            (!item.imagen || toSafeImageUrl(item.imagen))
           ));
           newsSection.replaceChildren();
 
@@ -86,6 +88,19 @@
             const article = document.createElement("article");
             article.className = "news-card";
             article.dataset.reveal = "";
+
+            const image = document.createElement("img");
+            image.className = "news-card-image";
+            image.alt = "";
+            image.setAttribute("aria-hidden", "true");
+            image.loading = "lazy";
+            image.decoding = "async";
+            image.referrerPolicy = "no-referrer";
+            image.src = toSafeImageUrl(item.imagen) || defaultNewsImage;
+            image.addEventListener("error", () => {
+              image.src = defaultNewsImage;
+            }, { once: true });
+            article.append(image);
 
             const meta = document.createElement("div");
             meta.className = "news-meta";
@@ -133,6 +148,17 @@
           newsSection.replaceChildren(createNewsStatus("No se pudieron cargar las noticias. Inténtalo más tarde."));
         } finally {
           newsSection.setAttribute("aria-busy", "false");
+        }
+      }
+
+      const defaultNewsImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%231b4332'/%3E%3Cpath d='M0 360 220 180l130 110 120-150 330 250v60H0Z' fill='%23b48a3d' fill-opacity='.45'/%3E%3Ctext x='400' y='245' fill='white' font-family='sans-serif' font-size='54' text-anchor='middle'%3ECFT%3C/text%3E%3C/svg%3E";
+
+      function toSafeImageUrl(value) {
+        try {
+          const url = new URL(value);
+          return url.protocol === "http:" || url.protocol === "https:" ? url.href : "";
+        } catch {
+          return "";
         }
       }
 

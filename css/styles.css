@@ -827,9 +827,24 @@
 
     .news-card {
       display: flex;
-      min-height: 310px;
+      min-height: 350px;
       flex-direction: column;
-      padding: 25px;
+      overflow: hidden;
+      padding: 0 25px 25px;
+    }
+
+    .news-card-image {
+      display: block;
+      width: calc(100% + 50px);
+      height: 190px;
+      flex: 0 0 auto;
+      margin: 0 -25px 22px;
+      background: var(--surface-raised);
+      object-fit: cover;
+    }
+
+    .news-card .news-meta {
+      margin-bottom: 20px;
     }
 
     .news-card .news-summary {

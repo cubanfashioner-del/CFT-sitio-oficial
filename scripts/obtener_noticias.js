@@ -5,7 +5,14 @@ const Parser = require("rss-parser");
 
 const parser = new Parser({
   customFields: {
-    item: ["content:encoded", "content", "description", "summary"],
+    item: [
+      "content:encoded",
+      "content",
+      "description",
+      "summary",
+      "media:content",
+      "media:thumbnail",
+    ],
   },
 });
 
@@ -32,7 +39,8 @@ const ARTICLES_PER_FEED = 1;
 const MAX_CONTENT_LENGTH = 360;
 const MAX_SUMMARY_LENGTH = 220;
 const MAX_TRANSLATION_CHUNK_LENGTH = 450;
-const OUTPUT_FIELDS = ["id", "titulo", "resumen", "contenido", "fuente", "fecha"];
+const OUTPUT_FIELDS = ["id", "titulo", "resumen", "contenido", "fuente", "fecha", "imagen"];
+const OUTPUT_TEXT_FIELDS = OUTPUT_FIELDS.filter((field) => field !== "imagen");
 
 const namedEntities = {
   amp: "&",
@@ -116,6 +124,67 @@ function getArticleContent(item) {
   return [];
 }
 
+function toSafeImageUrl(value, baseUrl) {
+  try {
+    const url = new URL(decodeEntities(String(value || "")).trim(), baseUrl);
+    return url.protocol === "https:" || url.protocol === "http:" ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+
+function getImageUrlFromMedia(media, baseUrl) {
+  const mediaItems = Array.isArray(media) ? media : [media];
+  for (const item of mediaItems) {
+    const type = item?.$?.type || item?.type || item?.mimeType || "";
+    const medium = item?.$?.medium || item?.medium || "";
+    if ((type && !type.startsWith("image/")) || (medium && medium !== "image")) continue;
+
+    const value = typeof item === "string"
+      ? item
+      : item?.$?.url || item?.$?.href || item?.url || item?.href;
+    const safeUrl = toSafeImageUrl(value, baseUrl);
+    if (safeUrl) return safeUrl;
+  }
+  return "";
+}
+
+function getImageUrlFromHtml(value, baseUrl) {
+  const html = String(value || "");
+  const imageTag = html.match(/<img\b[^>]*>/i)?.[0];
+  if (!imageTag) return "";
+
+  const attributes = [
+    ...imageTag.matchAll(/\b(?:src|data-src|data-lazy-src|data-original)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi),
+  ];
+  for (const match of attributes) {
+    const safeUrl = toSafeImageUrl(match[1] || match[2] || match[3], baseUrl);
+    if (safeUrl) return safeUrl;
+  }
+
+  const srcset = imageTag.match(/\bsrcset\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
+  if (srcset) {
+    const firstCandidate = (srcset[1] || srcset[2] || srcset[3]).split(",")[0].trim().split(/\s+/)[0];
+    return toSafeImageUrl(firstCandidate, baseUrl);
+  }
+
+  return "";
+}
+
+function findImage(item, baseUrl) {
+  const mediaImage = getImageUrlFromMedia(item["media:content"], baseUrl)
+    || getImageUrlFromMedia(item["media:thumbnail"], baseUrl)
+    || getImageUrlFromMedia(item.enclosure, baseUrl);
+  if (mediaImage) return mediaImage;
+
+  return [
+    item["content:encoded"],
+    item.content,
+    item.description,
+    item.summary,
+  ].map((html) => getImageUrlFromHtml(html, baseUrl)).find(Boolean) || "";
+}
+
 function getPublishedTimestamp(item) {
   const timestamp = Date.parse(item.isoDate || item.pubDate || "");
   return Number.isFinite(timestamp) ? timestamp : null;
@@ -171,6 +240,7 @@ async function getLatestFromFeed(feed) {
         contenido: content,
         fuente: feed.source,
         fecha: getReadableDate(timestamp),
+        imagen: findImage(item, feed.url),
         timestamp,
       };
     })
@@ -247,7 +317,18 @@ async function translateArticle(article) {
     contenido,
     fuente: article.fuente,
     fecha: article.fecha,
+    imagen: article.imagen,
   };
+}
+
+function isSafeImageUrl(value) {
+  if (!value) return true;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
 }
 
 function hasExpectedFields(article) {
@@ -257,8 +338,9 @@ function hasExpectedFields(article) {
     && OUTPUT_FIELDS.length === Object.keys(article).length
     && OUTPUT_FIELDS.every((field) => Object.hasOwn(article, field))
     && OUTPUT_FIELDS.every((field) => typeof article[field] === "string")
-    && OUTPUT_FIELDS.every((field) => !/(?:https?:\/\/|www\.)/i.test(article[field]))
-    && OUTPUT_FIELDS.every((field) => !/<\/?a\b/i.test(article[field]));
+    && OUTPUT_TEXT_FIELDS.every((field) => !/(?:https?:\/\/|www\.)/i.test(article[field]))
+    && OUTPUT_TEXT_FIELDS.every((field) => !/<\/?a\b/i.test(article[field]))
+    && isSafeImageUrl(article.imagen);
 }
 
 async function main() {
