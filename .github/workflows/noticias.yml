@@ -32,6 +32,8 @@ jobs:
         run: npm install
 
       - name: Actualizar noticias RSS
+        env:
+          GOOGLE_TRANSLATE_API_KEY: ${{ secrets.GOOGLE_TRANSLATE_API_KEY }}
         run: node scripts/obtener_noticias.js
 
       - name: Guardar y publicar cambios
