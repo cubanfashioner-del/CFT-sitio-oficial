@@ -2,8 +2,12 @@
   "name": "cft-noticias",
   "version": "1.0.0",
   "private": true,
+  "description": "Actualizador RSS de noticias para Cuba Fashion Technologies",
   "scripts": {
     "start": "node scripts/obtener_noticias.js"
+  },
+  "engines": {
+    "node": ">=24 <25"
   },
   "dependencies": {
     "rss-parser": "^3.13.0"

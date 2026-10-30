@@ -3,11 +3,6 @@ const path = require("node:path");
 const { createHash } = require("node:crypto");
 const Parser = require("rss-parser");
 
-const translationApiKey = process.env.GOOGLE_TRANSLATE_API_KEY;
-if (!translationApiKey) {
-  throw new Error("Falta configurar el secreto GOOGLE_TRANSLATE_API_KEY.");
-}
-
 const parser = new Parser({
   customFields: {
     item: ["content:encoded", "content", "description", "summary"],
@@ -33,11 +28,11 @@ const feeds = [
   },
 ];
 
-const ARTICLES_PER_FEED = 2;
-const MAX_CONTENT_LENGTH = 1200;
-const MAX_SUMMARY_LENGTH = 280;
-const MAX_TRANSLATION_SEGMENTS = 50;
-const MAX_TRANSLATION_CHARACTERS = 25000;
+const ARTICLES_PER_FEED = 1;
+const MAX_CONTENT_LENGTH = 360;
+const MAX_SUMMARY_LENGTH = 220;
+const MAX_TRANSLATION_CHUNK_LENGTH = 450;
+const OUTPUT_FIELDS = ["id", "titulo", "resumen", "contenido", "fuente", "fecha"];
 
 const namedEntities = {
   amp: "&",
@@ -76,15 +71,24 @@ function decodeEntities(value) {
     ));
 }
 
-function extractParagraphs(value) {
-  const html = String(value || "")
+function cleanText(value) {
+  return decodeEntities(String(value || "")
     .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, " ")
     .replace(/<(?:br|\/p|\/div|\/li|\/h[1-6])\b[^>]*>/gi, "\n")
-    .replace(/<[^>]*>/g, " ");
+    .replace(/<[^>]*>/g, " "))
+    .replace(/(?:https?:\/\/|www\.)[^\s<>"']+/gi, " ")
+    .replace(/\b[\w.-]+\.(?:com|org|net|io|gov|edu|co|uk|es)(?:\/[^\s<>"']*)?/gi, " ")
+    .replace(/\s+([,.;:!?])/g, "$1")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n\s+/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
 
-  return decodeEntities(html)
+function getParagraphs(value) {
+  return cleanText(value)
     .split(/\n+/)
-    .map((paragraph) => paragraph.replace(/\s+/g, " ").trim())
+    .map((paragraph) => paragraph.trim())
     .filter(Boolean);
 }
 
@@ -96,7 +100,7 @@ function truncateText(value, maxLength) {
 }
 
 function getArticleContent(item) {
-  const fields = [
+  const contentFields = [
     item["content:encoded"],
     item.content,
     item.description,
@@ -104,8 +108,8 @@ function getArticleContent(item) {
     item.contentSnippet,
   ];
 
-  for (const field of fields) {
-    const paragraphs = extractParagraphs(field);
+  for (const field of contentFields) {
+    const paragraphs = getParagraphs(field);
     if (paragraphs.length) return paragraphs;
   }
 
@@ -124,10 +128,9 @@ function getReadableDate(timestamp) {
   }).format(timestamp);
 }
 
-function createArticleId(source, item, timestamp) {
-  const stableIdentifier = item.guid || item.id || item.link || `${item.title}|${timestamp}`;
+function createArticleId(source, title, timestamp) {
   return createHash("sha256")
-    .update(`${source}|${stableIdentifier}`)
+    .update(`${source}|${title}|${timestamp}`)
     .digest("hex")
     .slice(0, 20);
 }
@@ -136,41 +139,33 @@ async function fetchFeed(feedUrl) {
   const response = await fetch(feedUrl, {
     headers: {
       Accept: "application/rss+xml, application/atom+xml, application/xml, text/xml",
-      "User-Agent": "CFTNewsAggregator/1.0 (+https://github.com/cubanfashioner-del/CFT-sitio-oficial)",
+      "User-Agent": "CFTNewsAggregator/1.0",
     },
     signal: AbortSignal.timeout(20000),
   });
 
   if (!response.ok) {
-    throw new Error(`El feed ${feedUrl} respondió con HTTP ${response.status}.`);
+    throw new Error(`El feed respondió con HTTP ${response.status}.`);
   }
 
-  const xml = await response.text();
-  return parser.parseString(xml);
+  return parser.parseString(await response.text());
 }
 
 async function getLatestFromFeed(feed) {
   const parsedFeed = await fetchFeed(feed.url);
-  const items = (parsedFeed.items || [])
+  return (parsedFeed.items || [])
     .map((item) => {
+      const title = cleanText(item.title);
       const paragraphs = getArticleContent(item);
-      const title = extractParagraphs(item.title)[0] || "";
       const timestamp = getPublishedTimestamp(item);
-      if (timestamp === null) return null;
+      if (!title || !paragraphs.length || timestamp === null) return null;
 
-      const content = truncateText(
-        paragraphs.join("\n\n") || item.contentSnippet || "",
-        MAX_CONTENT_LENGTH
-      );
-      const summary = truncateText(
-        paragraphs[0] || item.contentSnippet || "",
-        MAX_SUMMARY_LENGTH
-      );
-
-      if (!title || !summary || !content) return null;
+      const content = truncateText(paragraphs.join("\n\n"), MAX_CONTENT_LENGTH);
+      const summary = truncateText(paragraphs[0], MAX_SUMMARY_LENGTH);
+      if (!summary || !content) return null;
 
       return {
-        id: createArticleId(feed.source, item, timestamp),
+        id: createArticleId(feed.source, title, timestamp),
         titulo: title,
         resumen: summary,
         contenido: content,
@@ -182,106 +177,136 @@ async function getLatestFromFeed(feed) {
     .filter(Boolean)
     .sort((first, second) => second.timestamp - first.timestamp)
     .slice(0, ARTICLES_PER_FEED);
-
-  if (!items.length) {
-    throw new Error(`El feed de ${feed.source} no contiene noticias válidas.`);
-  }
-
-  return items;
 }
 
-async function translateToSpanish(texts) {
-  const translatedTexts = [];
-  let chunk = [];
-  let chunkCharacters = 0;
+function splitForTranslation(text) {
+  const chunks = [];
+  let remaining = text;
 
-  const translateChunk = async () => {
-    if (!chunk.length) return;
-
-    const response = await fetch(
-      `https://translation.googleapis.com/language/translate/v2?key=${encodeURIComponent(translationApiKey)}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          q: chunk,
-          target: "es",
-          format: "text",
-        }),
-        signal: AbortSignal.timeout(20000),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Google Cloud Translation respondió con HTTP ${response.status}.`);
+  while (remaining.length > MAX_TRANSLATION_CHUNK_LENGTH) {
+    let splitAt = remaining.lastIndexOf(" ", MAX_TRANSLATION_CHUNK_LENGTH);
+    if (splitAt < MAX_TRANSLATION_CHUNK_LENGTH * 0.6) {
+      splitAt = MAX_TRANSLATION_CHUNK_LENGTH;
     }
-
-    const result = await response.json();
-    const translations = result.data?.translations;
-    if (!Array.isArray(translations) || translations.length !== chunk.length) {
-      throw new Error("Google Cloud Translation devolvió una respuesta incompleta.");
-    }
-
-    translatedTexts.push(...translations.map((entry) => entry.translatedText));
-    chunk = [];
-    chunkCharacters = 0;
-  };
-
-  for (const text of texts) {
-    if (text.length > MAX_TRANSLATION_CHARACTERS) {
-      throw new Error("Un texto excede el límite permitido para su traducción.");
-    }
-
-    if (
-      chunk.length >= MAX_TRANSLATION_SEGMENTS
-      || chunkCharacters + text.length > MAX_TRANSLATION_CHARACTERS
-    ) {
-      await translateChunk();
-    }
-
-    chunk.push(text);
-    chunkCharacters += text.length;
+    chunks.push(remaining.slice(0, splitAt).trim());
+    remaining = remaining.slice(splitAt).trim();
   }
-  await translateChunk();
 
-  return translatedTexts.map((text) => decodeEntities(String(text)).trim());
+  if (remaining) chunks.push(remaining);
+  return chunks;
+}
+
+async function translateChunk(text) {
+  const url = new URL("https://api.mymemory.translated.net/get");
+  url.searchParams.set("q", text);
+  url.searchParams.set("langpair", "en|es");
+
+  const response = await fetch(url, {
+    headers: { Accept: "application/json" },
+    signal: AbortSignal.timeout(15000),
+  });
+  if (!response.ok) {
+    throw new Error(`El servicio gratuito de traducción respondió con HTTP ${response.status}.`);
+  }
+
+  const result = await response.json();
+  if (result.responseStatus !== 200 || result.quotaFinished) {
+    throw new Error(result.responseDetails || "El servicio gratuito de traducción no está disponible.");
+  }
+
+  const translated = cleanText(result.responseData?.translatedText);
+  if (!translated) throw new Error("El servicio gratuito devolvió una traducción vacía.");
+  return translated;
+}
+
+async function translateOrKeepOriginal(text) {
+  const chunks = splitForTranslation(text);
+  const translatedChunks = [];
+
+  for (const chunk of chunks) {
+    try {
+      translatedChunks.push(await translateChunk(chunk));
+    } catch (error) {
+      console.warn(`Traducción no disponible; se conserva el texto RSS: ${error.message}`);
+      translatedChunks.push(chunk);
+    }
+  }
+
+  return cleanText(translatedChunks.join(" "));
+}
+
+async function translateArticle(article) {
+  const titulo = await translateOrKeepOriginal(article.titulo);
+  const resumen = await translateOrKeepOriginal(article.resumen);
+  const contenido = await translateOrKeepOriginal(article.contenido);
+
+  return {
+    id: article.id,
+    titulo,
+    resumen,
+    contenido,
+    fuente: article.fuente,
+    fecha: article.fecha,
+  };
+}
+
+function hasExpectedFields(article) {
+  return article
+    && typeof article === "object"
+    && !Array.isArray(article)
+    && OUTPUT_FIELDS.length === Object.keys(article).length
+    && OUTPUT_FIELDS.every((field) => Object.hasOwn(article, field))
+    && OUTPUT_FIELDS.every((field) => typeof article[field] === "string")
+    && OUTPUT_FIELDS.every((field) => !/(?:https?:\/\/|www\.)/i.test(article[field]))
+    && OUTPUT_FIELDS.every((field) => !/<\/?a\b/i.test(article[field]));
 }
 
 async function main() {
-  const newsByFeed = await Promise.all(feeds.map(getLatestFromFeed));
-  const seenIds = new Set();
-  const articles = newsByFeed
-    .flat()
-    .filter((article) => {
-      if (seenIds.has(article.id)) return false;
-      seenIds.add(article.id);
-      return true;
-    })
-    .sort((first, second) => second.timestamp - first.timestamp);
+  const feedResults = await Promise.allSettled(feeds.map(async (feed) => ({
+    feed,
+    articles: await getLatestFromFeed(feed),
+  })));
+  const articles = [];
+
+  feedResults.forEach((result, index) => {
+    if (result.status === "rejected") {
+      console.warn(
+        `No se pudo actualizar ${feeds[index].source} (${feeds[index].url}): ${result.reason.message}`
+      );
+      return;
+    }
+
+    if (!result.value.articles.length) {
+      console.warn(`El feed de ${result.value.feed.source} no contiene noticias válidas en esta ejecución.`);
+      return;
+    }
+
+    articles.push(...result.value.articles);
+  });
 
   if (!articles.length) {
-    throw new Error("Los feeds no proporcionaron noticias para publicar.");
+    console.warn("Ningún feed respondió con noticias; se conserva data/noticias.json sin cambios.");
+    return;
   }
 
-  const translated = await translateToSpanish(
-    articles.flatMap(({ titulo, resumen, contenido }) => [titulo, resumen, contenido])
-  );
-  const news = articles.map((article, index) => ({
-    id: article.id,
-    titulo: translated[index * 3],
-    resumen: translated[index * 3 + 1],
-    contenido: translated[index * 3 + 2],
-    fuente: article.fuente,
-    fecha: article.fecha,
-  }));
-  const outputPath = path.join(__dirname, "..", "data", "noticias.json");
+  const uniqueArticles = [...new Map(articles.map((article) => [article.id, article])).values()]
+    .sort((first, second) => second.timestamp - first.timestamp);
+  const news = [];
+  for (const article of uniqueArticles) {
+    news.push(await translateArticle(article));
+  }
 
+  if (!news.every(hasExpectedFields)) {
+    throw new Error("La salida contiene campos no permitidos, enlaces o datos con formato inválido.");
+  }
+
+  const outputPath = path.join(__dirname, "..", "data", "noticias.json");
   await fs.mkdir(path.dirname(outputPath), { recursive: true });
   await fs.writeFile(outputPath, `${JSON.stringify(news, null, 2)}\n`, "utf8");
-  console.log(`Se guardaron ${news.length} noticias RSS traducidas en ${outputPath}.`);
+  console.log(`Se guardaron ${news.length} noticias sin enlaces externos en ${outputPath}.`);
 }
 
 main().catch((error) => {
-  console.error("No se pudieron actualizar las noticias:", error);
+  console.error("No se pudieron guardar las noticias:", error);
   process.exitCode = 1;
 });
