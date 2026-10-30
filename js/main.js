@@ -174,8 +174,14 @@
 
         newsModalTitle.textContent = item.titulo;
         newsModalBody.textContent = item.contenido;
+        if (item.contenido.trim() === item.resumen.trim()) {
+          const excerptNotice = document.createElement("p");
+          excerptNotice.className = "news-excerpt-notice";
+          excerptNotice.textContent = "La fuente solo publica este extracto en su feed RSS.";
+          newsModalBody.append(excerptNotice);
+        }
         newsModalSource.textContent = `${item.fuente} · ${item.fecha}`;
-        newsModalBody.scrollTop = 0;
+        newsModal.scrollTop = 0;
         newsModal.showModal();
         document.body.classList.add("modal-open");
         history.pushState(

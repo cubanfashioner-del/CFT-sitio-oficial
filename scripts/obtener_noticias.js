@@ -36,7 +36,7 @@ const feeds = [
 ];
 
 const ARTICLES_PER_FEED = 1;
-const MAX_CONTENT_LENGTH = 360;
+const MAX_CONTENT_LENGTH = 700;
 const MAX_SUMMARY_LENGTH = 220;
 const MAX_TRANSLATION_CHUNK_LENGTH = 450;
 const OUTPUT_FIELDS = ["id", "titulo", "resumen", "contenido", "fuente", "fecha", "imagen"];
@@ -108,20 +108,41 @@ function truncateText(value, maxLength) {
 }
 
 function getArticleContent(item) {
-  const contentFields = [
+  const articleFields = [
     item["content:encoded"],
     item.content,
+  ];
+  const summaryFields = [
     item.description,
     item.summary,
     item.contentSnippet,
   ];
 
-  for (const field of contentFields) {
-    const paragraphs = getParagraphs(field);
-    if (paragraphs.length) return paragraphs;
+  const articleParagraphs = articleFields.map(getParagraphs).find((paragraphs) => paragraphs.length);
+  const summaryParagraphs = summaryFields.map(getParagraphs).find((paragraphs) => paragraphs.length);
+
+  if (!articleParagraphs && !summaryParagraphs) {
+    return { paragraphs: [], summary: "" };
   }
 
-  return [];
+  const paragraphs = articleParagraphs || summaryParagraphs;
+  const summary = summaryParagraphs?.[0] || paragraphs[0];
+  return { paragraphs: limitParagraphs(paragraphs, MAX_CONTENT_LENGTH), summary };
+}
+
+function limitParagraphs(paragraphs, maxLength) {
+  const limited = [];
+  let remaining = maxLength;
+
+  for (const paragraph of paragraphs) {
+    if (remaining <= 0) break;
+    const text = truncateText(paragraph, remaining);
+    if (text) limited.push(text);
+    remaining -= text.length;
+    if (text.endsWith("…")) break;
+  }
+
+  return limited;
 }
 
 function toSafeImageUrl(value, baseUrl) {
@@ -225,19 +246,20 @@ async function getLatestFromFeed(feed) {
   return (parsedFeed.items || [])
     .map((item) => {
       const title = cleanText(item.title);
-      const paragraphs = getArticleContent(item);
+      const { paragraphs, summary: summaryText } = getArticleContent(item);
       const timestamp = getPublishedTimestamp(item);
       if (!title || !paragraphs.length || timestamp === null) return null;
 
-      const content = truncateText(paragraphs.join("\n\n"), MAX_CONTENT_LENGTH);
-      const summary = truncateText(paragraphs[0], MAX_SUMMARY_LENGTH);
-      if (!summary || !content) return null;
+      const contentParagraphs = paragraphs;
+      const summary = truncateText(summaryText, MAX_SUMMARY_LENGTH);
+      if (!summary || !contentParagraphs.length) return null;
 
       return {
         id: createArticleId(feed.source, title, timestamp),
         titulo: title,
         resumen: summary,
-        contenido: content,
+        contentParagraphs,
+        contenido: contentParagraphs.join("\n\n"),
         fuente: feed.source,
         fecha: getReadableDate(timestamp),
         imagen: findImage(item, feed.url),
@@ -305,10 +327,18 @@ async function translateOrKeepOriginal(text) {
   return cleanText(translatedChunks.join(" "));
 }
 
+async function translateParagraphsOrKeepOriginal(paragraphs) {
+  const translatedParagraphs = [];
+  for (const paragraph of paragraphs) {
+    translatedParagraphs.push(await translateOrKeepOriginal(paragraph));
+  }
+  return translatedParagraphs.filter(Boolean).join("\n\n");
+}
+
 async function translateArticle(article) {
   const titulo = await translateOrKeepOriginal(article.titulo);
   const resumen = await translateOrKeepOriginal(article.resumen);
-  const contenido = await translateOrKeepOriginal(article.contenido);
+  const contenido = await translateParagraphsOrKeepOriginal(article.contentParagraphs);
 
   return {
     id: article.id,
