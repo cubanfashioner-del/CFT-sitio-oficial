@@ -76,11 +76,15 @@ async function getLatestFromFeed(feedUrl) {
     .map((item) => {
       const published = item.isoDate || item.pubDate || "";
       const timestamp = Date.parse(published);
+      const content = cleanDescription(
+        item["content:encoded"] || item.content || item.description || item.summary || item.contentSnippet
+      );
       return {
         titulo: cleanDescription(item.title),
         descripcion: cleanDescription(
           item.contentSnippet || item.description || item.summary || item["content:encoded"]
         ) || "Descripción no disponible.",
+        contenido: content || "Contenido no disponible en la fuente RSS.",
         url: toHttpUrl(item.link),
         imagen: toHttpUrl(findImage(item)),
         fecha: Number.isNaN(timestamp) ? "" : new Date(timestamp).toISOString(),

@@ -269,6 +269,26 @@
     </section>
   </main>
 
+  <dialog class="modal news-modal" id="news-modal" aria-labelledby="news-modal-title">
+    <div class="modal-content news-modal-content">
+      <div class="modal-head">
+        <div>
+          <span class="eyebrow">Radar tecnológico</span>
+          <h2 id="news-modal-title"></h2>
+        </div>
+        <button class="modal-close" type="button" aria-label="Cerrar noticia">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body news-modal-body" id="news-modal-body"></div>
+      <a class="text-link news-original-link" id="news-original-link" target="_blank" rel="noopener noreferrer">
+        Leer noticia original
+      </a>
+    </div>
+  </dialog>
+
   <dialog class="modal account-modal" id="account-modal" aria-labelledby="account-modal-title">
     <div class="modal-content">
       <div class="modal-head">

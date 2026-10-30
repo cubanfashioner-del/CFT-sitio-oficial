@@ -10,6 +10,10 @@
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
       const revealElements = document.querySelectorAll("[data-reveal]");
       const newsSection = document.querySelector("#seccion-noticias");
+      const newsModal = document.querySelector("#news-modal");
+      const newsModalTitle = document.querySelector("#news-modal-title");
+      const newsModalBody = document.querySelector("#news-modal-body");
+      const newsOriginalLink = document.querySelector("#news-original-link");
       const uiHistoryKey = "cftUi";
       const accountLink = document.querySelector("#nav-account-link");
       const accountLabel = document.querySelector("#nav-account-label");
@@ -120,10 +124,27 @@
             article.append(title);
 
             const description = document.createElement("p");
-            description.textContent = typeof item.descripcion === "string"
-              ? item.descripcion || "Descripción no disponible."
-              : "Descripción no disponible.";
+            const fullText = typeof item.contenido === "string" && item.contenido.trim()
+              ? item.contenido.trim()
+              : typeof item.descripcion === "string" && item.descripcion.trim()
+                ? item.descripcion.trim()
+                : "Contenido no disponible en la fuente RSS.";
+            const summary = typeof item.descripcion === "string" && item.descripcion.trim()
+              ? item.descripcion.trim()
+              : fullText;
+            description.className = "news-summary";
+            description.textContent = summary.length > 180
+              ? `${summary.slice(0, 177).trimEnd()}…`
+              : summary;
             article.append(description);
+
+            const readMore = document.createElement("button");
+            readMore.className = "button button-outline news-read-more";
+            readMore.type = "button";
+            readMore.textContent = "Leer más";
+            readMore.setAttribute("aria-haspopup", "dialog");
+            readMore.addEventListener("click", () => openNewsModal(item, fullText));
+            article.append(readMore);
             newsSection.append(article);
           });
 
@@ -160,6 +181,22 @@
         status.className = "news-status";
         status.textContent = message;
         return status;
+      }
+
+      function openNewsModal(item, fullText) {
+        if (!(newsModal instanceof HTMLDialogElement) || newsModal.open) return;
+
+        newsModalTitle.textContent = item.titulo;
+        newsModalBody.textContent = fullText;
+        newsOriginalLink.href = toSafeHttpUrl(item.url);
+        newsModalBody.scrollTop = 0;
+        newsModal.showModal();
+        document.body.classList.add("modal-open");
+        history.pushState(
+          { ...getUiHistoryState(), [uiHistoryKey]: { type: "modal", id: newsModal.id } },
+          "",
+          window.location.href
+        );
       }
 
       if (newsSection) loadNews();
