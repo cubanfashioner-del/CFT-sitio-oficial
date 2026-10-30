@@ -16,31 +16,33 @@ const parser = new Parser({
   },
 });
 
-const feeds = [
-  {
-    url: "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml",
-    source: "The New York Times",
-  },
-  {
-    url: "https://rss.nytimes.com/services/xml/rss/nyt/Science.xml",
-    source: "The New York Times",
-  },
-  {
-    url: "https://spectrum.ieee.org/feeds/feed.rss",
-    source: "IEEE Spectrum",
-  },
-  {
-    url: "https://www.technologyreview.com/feed/",
-    source: "MIT Technology Review",
-  },
-];
-
-const ARTICLES_PER_FEED = 1;
-const MAX_CONTENT_LENGTH = 700;
-const MAX_SUMMARY_LENGTH = 220;
+const ARTICLES_PER_FEED = 2;
+const MIN_CONTENT_LENGTH = 900;
+const MIN_SUMMARY_LENGTH = 70;
+const MAX_SUMMARY_LENGTH = 240;
+const MIN_PARAGRAPHS = 3;
+const MIN_IMAGE_WIDTH = 800;
 const MAX_TRANSLATION_CHUNK_LENGTH = 450;
 const OUTPUT_FIELDS = ["id", "titulo", "resumen", "contenido", "fuente", "fecha", "imagen"];
 const OUTPUT_TEXT_FIELDS = OUTPUT_FIELDS.filter((field) => field !== "imagen");
+const feeds = [
+  {
+    url: "https://feeds.arstechnica.com/arstechnica/index",
+    source: "Ars Technica",
+  },
+  {
+    url: "https://techcrunch.com/feed/",
+    source: "TechCrunch",
+  },
+  {
+    url: "https://www.theverge.com/rss/index.xml",
+    source: "The Verge",
+  },
+  {
+    url: "https://www.wired.com/feed/rss",
+    source: "WIRED",
+  },
+];
 
 const namedEntities = {
   amp: "&",
@@ -118,31 +120,27 @@ function getArticleContent(item) {
     item.contentSnippet,
   ];
 
-  const articleParagraphs = articleFields.map(getParagraphs).find((paragraphs) => paragraphs.length);
+  const articleParagraphs = articleFields
+    .map(getParagraphs)
+    .find((paragraphs) => paragraphs.length);
   const summaryParagraphs = summaryFields.map(getParagraphs).find((paragraphs) => paragraphs.length);
 
-  if (!articleParagraphs && !summaryParagraphs) {
+  if (!articleParagraphs) return { paragraphs: [], summary: "" };
+
+  const summary = summaryParagraphs?.[0] || articleParagraphs[0];
+  const paragraphs = articleParagraphs;
+  const content = paragraphs.join("\n\n");
+  const appearsTruncated = /(?:…|\.{3}|\[\s*(?:read|continue|more)[^\]]*\])\s*$/i.test(content);
+
+  if (
+    paragraphs.length < MIN_PARAGRAPHS
+    || content.length < MIN_CONTENT_LENGTH
+    || appearsTruncated
+  ) {
     return { paragraphs: [], summary: "" };
   }
 
-  const paragraphs = articleParagraphs || summaryParagraphs;
-  const summary = summaryParagraphs?.[0] || paragraphs[0];
-  return { paragraphs: limitParagraphs(paragraphs, MAX_CONTENT_LENGTH), summary };
-}
-
-function limitParagraphs(paragraphs, maxLength) {
-  const limited = [];
-  let remaining = maxLength;
-
-  for (const paragraph of paragraphs) {
-    if (remaining <= 0) break;
-    const text = truncateText(paragraph, remaining);
-    if (text) limited.push(text);
-    remaining -= text.length;
-    if (text.endsWith("…")) break;
-  }
-
-  return limited;
+  return { paragraphs, summary };
 }
 
 function toSafeImageUrl(value, baseUrl) {
@@ -154,56 +152,71 @@ function toSafeImageUrl(value, baseUrl) {
   }
 }
 
-function getImageUrlFromMedia(media, baseUrl) {
+function getImageCandidatesFromMedia(media, baseUrl) {
   const mediaItems = Array.isArray(media) ? media : [media];
-  for (const item of mediaItems) {
+  return mediaItems.flatMap((item) => {
     const type = item?.$?.type || item?.type || item?.mimeType || "";
     const medium = item?.$?.medium || item?.medium || "";
-    if ((type && !type.startsWith("image/")) || (medium && medium !== "image")) continue;
+    if ((type && !type.startsWith("image/")) || (medium && medium !== "image")) return [];
 
-    const value = typeof item === "string"
-      ? item
-      : item?.$?.url || item?.$?.href || item?.url || item?.href;
-    const safeUrl = toSafeImageUrl(value, baseUrl);
-    if (safeUrl) return safeUrl;
-  }
-  return "";
+    const url = toSafeImageUrl(
+      typeof item === "string" ? item : item?.$?.url || item?.url || item?.href,
+      baseUrl
+    );
+    const width = Number(item?.$?.width || item?.width || 0);
+    return url && Number.isFinite(width) ? [{ url, width }] : [];
+  });
 }
 
-function getImageUrlFromHtml(value, baseUrl) {
-  const html = String(value || "");
-  const imageTag = html.match(/<img\b[^>]*>/i)?.[0];
-  if (!imageTag) return "";
+function getAttribute(tag, name) {
+  const match = tag.match(new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, "i"));
+  return match ? match[1] || match[2] || match[3] || "" : "";
+}
 
-  const attributes = [
-    ...imageTag.matchAll(/\b(?:src|data-src|data-lazy-src|data-original)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi),
-  ];
-  for (const match of attributes) {
-    const safeUrl = toSafeImageUrl(match[1] || match[2] || match[3], baseUrl);
-    if (safeUrl) return safeUrl;
-  }
+function getImageCandidatesFromHtml(value, baseUrl) {
+  const tags = String(value || "").match(/<img\b[^>]*>/gi) || [];
+  return tags.flatMap((tag) => {
+    const srcset = getAttribute(tag, "srcset");
+    const srcsetCandidates = srcset.split(",").map((candidate) => {
+      const [urlValue, descriptor] = candidate.trim().split(/\s+/);
+      const width = descriptor?.endsWith("w")
+        ? Number.parseInt(descriptor, 10)
+        : Number.parseInt(getAttribute(tag, "width"), 10);
+      const url = toSafeImageUrl(urlValue, baseUrl);
+      return url && Number.isFinite(width) ? { url, width } : null;
+    }).filter(Boolean);
 
-  const srcset = imageTag.match(/\bsrcset\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
-  if (srcset) {
-    const firstCandidate = (srcset[1] || srcset[2] || srcset[3]).split(",")[0].trim().split(/\s+/)[0];
-    return toSafeImageUrl(firstCandidate, baseUrl);
-  }
-
-  return "";
+    const fallbackUrl = toSafeImageUrl(
+      getAttribute(tag, "src")
+        || getAttribute(tag, "data-src")
+        || getAttribute(tag, "data-lazy-src")
+        || getAttribute(tag, "data-original"),
+      baseUrl
+    );
+    const declaredWidth = Number.parseInt(getAttribute(tag, "width"), 10);
+    const fallbackCandidate = fallbackUrl && Number.isFinite(declaredWidth)
+      ? [{ url: fallbackUrl, width: declaredWidth }]
+      : [];
+    return [...srcsetCandidates, ...fallbackCandidate];
+  });
 }
 
 function findImage(item, baseUrl) {
-  const mediaImage = getImageUrlFromMedia(item["media:content"], baseUrl)
-    || getImageUrlFromMedia(item["media:thumbnail"], baseUrl)
-    || getImageUrlFromMedia(item.enclosure, baseUrl);
-  if (mediaImage) return mediaImage;
+  const candidates = [
+    ...getImageCandidatesFromMedia(item["media:content"], baseUrl),
+    ...getImageCandidatesFromMedia(item["media:thumbnail"], baseUrl),
+    ...getImageCandidatesFromMedia(item.enclosure, baseUrl),
+    ...[
+      item["content:encoded"],
+      item.content,
+      item.description,
+      item.summary,
+    ].flatMap((html) => getImageCandidatesFromHtml(html, baseUrl)),
+  ];
 
-  return [
-    item["content:encoded"],
-    item.content,
-    item.description,
-    item.summary,
-  ].map((html) => getImageUrlFromHtml(html, baseUrl)).find(Boolean) || "";
+  return candidates
+    .filter((candidate) => candidate.width >= MIN_IMAGE_WIDTH)
+    .sort((first, second) => second.width - first.width)[0]?.url || "";
 }
 
 function getPublishedTimestamp(item) {
@@ -248,21 +261,27 @@ async function getLatestFromFeed(feed) {
       const title = cleanText(item.title);
       const { paragraphs, summary: summaryText } = getArticleContent(item);
       const timestamp = getPublishedTimestamp(item);
-      if (!title || !paragraphs.length || timestamp === null) return null;
+      const image = findImage(item, feed.url);
+      if (!title || paragraphs.length < MIN_PARAGRAPHS || timestamp === null || !image) return null;
 
       const contentParagraphs = paragraphs;
       const summary = truncateText(summaryText, MAX_SUMMARY_LENGTH);
-      if (!summary || !contentParagraphs.length) return null;
+      const content = contentParagraphs.join("\n\n");
+      if (
+        summary.length < MIN_SUMMARY_LENGTH
+        || content.length < MIN_CONTENT_LENGTH
+        || /(?:…|\.{3}|\[\s*(?:read|continue|more)[^\]]*\])\s*$/i.test(content)
+      ) return null;
 
       return {
         id: createArticleId(feed.source, title, timestamp),
         titulo: title,
         resumen: summary,
         contentParagraphs,
-        contenido: contentParagraphs.join("\n\n"),
+        contenido: content,
         fuente: feed.source,
         fecha: getReadableDate(timestamp),
-        imagen: findImage(item, feed.url),
+        imagen: image,
         timestamp,
       };
     })
@@ -311,36 +330,31 @@ async function translateChunk(text) {
   return translated;
 }
 
-async function translateOrKeepOriginal(text) {
+async function translateRequired(text) {
   const chunks = splitForTranslation(text);
   const translatedChunks = [];
 
   for (const chunk of chunks) {
-    try {
-      translatedChunks.push(await translateChunk(chunk));
-    } catch (error) {
-      console.warn(`Traducción no disponible; se conserva el texto RSS: ${error.message}`);
-      translatedChunks.push(chunk);
-    }
+    translatedChunks.push(await translateChunk(chunk));
   }
 
   return cleanText(translatedChunks.join(" "));
 }
 
-async function translateParagraphsOrKeepOriginal(paragraphs) {
+async function translateParagraphs(paragraphs) {
   const translatedParagraphs = [];
   for (const paragraph of paragraphs) {
-    translatedParagraphs.push(await translateOrKeepOriginal(paragraph));
+    translatedParagraphs.push(await translateRequired(paragraph));
   }
   return translatedParagraphs.filter(Boolean).join("\n\n");
 }
 
 async function translateArticle(article) {
-  const titulo = await translateOrKeepOriginal(article.titulo);
-  const resumen = await translateOrKeepOriginal(article.resumen);
-  const contenido = await translateParagraphsOrKeepOriginal(article.contentParagraphs);
+  const titulo = await translateRequired(article.titulo);
+  const resumen = await translateRequired(article.resumen);
+  const contenido = await translateParagraphs(article.contentParagraphs);
 
-  return {
+  const translatedArticle = {
     id: article.id,
     titulo,
     resumen,
@@ -349,10 +363,22 @@ async function translateArticle(article) {
     fecha: article.fecha,
     imagen: article.imagen,
   };
+
+  if (
+    translatedArticle.resumen.length < MIN_SUMMARY_LENGTH
+    || translatedArticle.contenido.length < MIN_CONTENT_LENGTH
+    || translatedArticle.contenido.split(/\n{2,}/).length < MIN_PARAGRAPHS
+    || /(?:…|\.{3}|\[\s*(?:read|continue|more)[^\]]*\])\s*$/i.test(translatedArticle.contenido)
+    || !hasExpectedFields(translatedArticle)
+  ) {
+    throw new Error("La noticia traducida no cumple los filtros de calidad.");
+  }
+
+  return translatedArticle;
 }
 
 function isSafeImageUrl(value) {
-  if (!value) return true;
+  if (!value) return false;
   try {
     const url = new URL(value);
     return url.protocol === "https:" || url.protocol === "http:";
@@ -368,6 +394,7 @@ function hasExpectedFields(article) {
     && OUTPUT_FIELDS.length === Object.keys(article).length
     && OUTPUT_FIELDS.every((field) => Object.hasOwn(article, field))
     && OUTPUT_FIELDS.every((field) => typeof article[field] === "string")
+    && OUTPUT_FIELDS.every((field) => article[field].trim().length > 0)
     && OUTPUT_TEXT_FIELDS.every((field) => !/(?:https?:\/\/|www\.)/i.test(article[field]))
     && OUTPUT_TEXT_FIELDS.every((field) => !/<\/?a\b/i.test(article[field]))
     && isSafeImageUrl(article.imagen);
@@ -378,6 +405,11 @@ async function main() {
     feed,
     articles: await getLatestFromFeed(feed),
   })));
+  if (feedResults.every((result) => result.status === "rejected")) {
+    console.warn("No se pudo consultar ningún feed; se conserva data/noticias.json.");
+    return;
+  }
+
   const articles = [];
 
   feedResults.forEach((result, index) => {
@@ -397,15 +429,18 @@ async function main() {
   });
 
   if (!articles.length) {
-    console.warn("Ningún feed respondió con noticias; se conserva data/noticias.json sin cambios.");
-    return;
+    console.warn("Ningún feed proporcionó noticias completas con imagen; se publicará una lista vacía.");
   }
 
   const uniqueArticles = [...new Map(articles.map((article) => [article.id, article])).values()]
     .sort((first, second) => second.timestamp - first.timestamp);
   const news = [];
   for (const article of uniqueArticles) {
-    news.push(await translateArticle(article));
+    try {
+      news.push(await translateArticle(article));
+    } catch (error) {
+      console.warn(`Se descarta "${article.titulo}": ${error.message}`);
+    }
   }
 
   if (!news.every(hasExpectedFields)) {
