@@ -3,10 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0; url=https://cubanfashioner-del.github.io/Login/">
+  <meta name="theme-color" content="#f8f9fa">
   <title>Iniciar sesión | CFT — Cuba Fashion Technologies</title>
+  <script>
+    document.documentElement.dataset.theme = "light";
+    try {
+      const savedTheme = localStorage.getItem("cft-theme") || localStorage.getItem("cuban-fashioner-tech-theme");
+      if (savedTheme === "light" || savedTheme === "dark") {
+        document.documentElement.dataset.theme = savedTheme;
+      }
+    } catch (error) {
+      console.warn("No se pudo leer la preferencia de tema.", error);
+    }
+  </script>
+  <link rel="stylesheet" href="../css/splash.css">
+  <script src="../js/splash.js" defer></script>
 </head>
-<body>
-  <p>Abriendo el acceso seguro de CFT. <a href="https://cubanfashioner-del.github.io/Login/">Continuar al inicio de sesión</a>.</p>
+<body class="splash-page" data-splash-redirect="https://cubanfashioner-del.github.io/Login/">
+  <main class="splash-screen" id="cft-splash" role="status" aria-live="polite">
+    <div class="splash-content">
+      <img class="splash-logo logo-light" src="../images/logo-cft-claro.jpeg" alt="CFT — Cuba Fashion Technologies">
+      <img class="splash-logo logo-dark" src="../images/logo-cft-oscuro.png" alt="">
+      <span class="splash-spinner" aria-hidden="true"></span>
+      <p class="splash-message">Abriendo el acceso seguro de CFT…</p>
+      <a href="https://cubanfashioner-del.github.io/Login/" data-splash-link>Continuar al inicio de sesión</a>
+    </div>
+  </main>
 </body>
 </html>

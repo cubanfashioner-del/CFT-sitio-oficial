@@ -1,6 +1,13 @@
 const SUPABASE_URL = "https://fzgkaolxngitwlatsusf.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6Z2thb2x4bmdpdHdsYXRzdXNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2OTE5MDAsImV4cCI6MjEwODI2NzkwMH0.l_l4MV9Scu7PTZLztGam8DP7HGRCh93fCosA4R3m5P4";
-const LOGIN_REDIRECT = new URL("./index.html", window.location.href).href;
+const LOGIN_REDIRECT = "https://cubanfashioner-del.github.io/CFT-sitio-oficial/";
+const navigateWithSplash = (url) => {
+  if (typeof window.cftNavigate === "function") {
+    window.cftNavigate(url);
+  } else {
+    window.location.assign(url);
+  }
+};
 
 const form = document.querySelector("#login-form");
 const emailInput = document.querySelector("#email");
@@ -27,6 +34,7 @@ let createClientPromise = null;
 let isRegisterMode = false;
 const accountModeHistoryKey = "cftAccountMode";
 
+rememberInput.checked = true;
 currentYear.textContent = String(new Date().getFullYear());
 
 function setMessage(text, state = "info") {
@@ -172,7 +180,7 @@ form.addEventListener("submit", async (event) => {
       if (error) throw error;
 
       if (data.session) {
-        window.location.assign(LOGIN_REDIRECT);
+        navigateWithSplash(LOGIN_REDIRECT);
       } else {
         setMessage("Si el registro puede completarse con ese correo, recibirás un mensaje para confirmar la dirección y activar el acceso.", "success");
       }
@@ -183,7 +191,7 @@ form.addEventListener("submit", async (event) => {
       });
 
       if (error) throw error;
-      window.location.assign(LOGIN_REDIRECT);
+      navigateWithSplash(LOGIN_REDIRECT);
     }
   } catch (error) {
     console.error(isRegisterMode ? "Error al crear la cuenta:" : "Error al iniciar sesión:", error);

@@ -13,7 +13,7 @@
       const newsModal = document.querySelector("#news-modal");
       const newsModalTitle = document.querySelector("#news-modal-title");
       const newsModalBody = document.querySelector("#news-modal-body");
-      const newsOriginalLink = document.querySelector("#news-original-link");
+      const newsModalSource = document.querySelector("#news-modal-source");
       const uiHistoryKey = "cftUi";
       const accountLink = document.querySelector("#nav-account-link");
       const accountLabel = document.querySelector("#nav-account-label");
@@ -67,9 +67,13 @@
 
           const articles = news.filter((item) => (
             item &&
+            Object.keys(item).length === 6 &&
+            typeof item.id === "string" &&
             typeof item.titulo === "string" &&
-            typeof item.url === "string" &&
-            toSafeHttpUrl(item.url)
+            typeof item.resumen === "string" &&
+            typeof item.contenido === "string" &&
+            typeof item.fuente === "string" &&
+            typeof item.fecha === "string"
           ));
           newsSection.replaceChildren();
 
@@ -83,59 +87,26 @@
             article.className = "news-card";
             article.dataset.reveal = "";
 
-            const image = document.createElement("img");
-            image.className = "news-card-image";
-            image.alt = `Imagen de ${item.titulo}`;
-            image.loading = "lazy";
-            image.src = toSafeHttpUrl(item.imagen) || defaultNewsImage;
-            image.addEventListener("error", () => {
-              image.src = defaultNewsImage;
-            }, { once: true });
-            article.append(image);
-
             const meta = document.createElement("div");
             meta.className = "news-meta";
             const source = document.createElement("span");
             source.className = "tag";
-            source.textContent = new URL(item.url).hostname.replace(/^www\./, "");
+            source.textContent = item.fuente;
             meta.append(source);
 
             const published = document.createElement("time");
-            const date = new Date(item.fecha);
-            if (item.fecha && !Number.isNaN(date.getTime())) {
-              published.dateTime = date.toISOString();
-              published.textContent = new Intl.DateTimeFormat("es", {
-                dateStyle: "medium",
-              }).format(date);
-            } else {
-              published.textContent = "Fecha no disponible";
-            }
+            published.textContent = item.fecha;
             meta.append(published);
             article.append(meta);
 
             const title = document.createElement("h3");
             title.className = "news-card-title";
-            const link = document.createElement("a");
-            link.href = toSafeHttpUrl(item.url);
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-            link.textContent = item.titulo;
-            title.append(link);
+            title.textContent = item.titulo;
             article.append(title);
 
             const description = document.createElement("p");
-            const fullText = typeof item.contenido === "string" && item.contenido.trim()
-              ? item.contenido.trim()
-              : typeof item.descripcion === "string" && item.descripcion.trim()
-                ? item.descripcion.trim()
-                : "Contenido no disponible en la fuente RSS.";
-            const summary = typeof item.descripcion === "string" && item.descripcion.trim()
-              ? item.descripcion.trim()
-              : fullText;
             description.className = "news-summary";
-            description.textContent = summary.length > 180
-              ? `${summary.slice(0, 177).trimEnd()}…`
-              : summary;
+            description.textContent = item.resumen;
             article.append(description);
 
             const readMore = document.createElement("button");
@@ -143,7 +114,7 @@
             readMore.type = "button";
             readMore.textContent = "Leer más";
             readMore.setAttribute("aria-haspopup", "dialog");
-            readMore.addEventListener("click", () => openNewsModal(item, fullText));
+            readMore.addEventListener("click", () => openNewsModal(item));
             article.append(readMore);
             newsSection.append(article);
           });
@@ -165,17 +136,6 @@
         }
       }
 
-      const defaultNewsImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%231b4332'/%3E%3Cpath d='M0 360 220 180l130 110 120-150 330 250v60H0Z' fill='%23b48a3d' fill-opacity='.45'/%3E%3Ctext x='400' y='245' fill='white' font-family='sans-serif' font-size='54' text-anchor='middle'%3ECFT%3C/text%3E%3C/svg%3E";
-
-      function toSafeHttpUrl(value) {
-        try {
-          const url = new URL(value);
-          return url.protocol === "http:" || url.protocol === "https:" ? url.href : "";
-        } catch {
-          return "";
-        }
-      }
-
       function createNewsStatus(message) {
         const status = document.createElement("p");
         status.className = "news-status";
@@ -183,12 +143,12 @@
         return status;
       }
 
-      function openNewsModal(item, fullText) {
+      function openNewsModal(item) {
         if (!(newsModal instanceof HTMLDialogElement) || newsModal.open) return;
 
         newsModalTitle.textContent = item.titulo;
-        newsModalBody.textContent = fullText;
-        newsOriginalLink.href = toSafeHttpUrl(item.url);
+        newsModalBody.textContent = item.contenido;
+        newsModalSource.textContent = `${item.fuente} · ${item.fecha}`;
         newsModalBody.scrollTop = 0;
         newsModal.showModal();
         document.body.classList.add("modal-open");

@@ -21,6 +21,7 @@
     }
   </script>
   <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/splash.css">
 </head>
 <body>
   <div class="global-network" aria-hidden="true">
@@ -106,7 +107,7 @@
           </svg>
           <span class="theme-toggle-label">Oscuro</span>
         </button>
-        <a class="nav-account" id="nav-account-link" href="https://cubanfashioner-del.github.io/Login/" aria-label="Iniciar sesión o crear una cuenta">
+        <a class="nav-account" id="nav-account-link" href="https://cubanfashioner-del.github.io/Login/" data-splash-link aria-label="Iniciar sesión o crear una cuenta">
           <span class="nav-account-avatar" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.6"/>
@@ -283,9 +284,7 @@
         </button>
       </div>
       <div class="modal-body news-modal-body" id="news-modal-body"></div>
-      <a class="text-link news-original-link" id="news-original-link" target="_blank" rel="noopener noreferrer">
-        Leer noticia original
-      </a>
+      <p class="news-modal-source" id="news-modal-source"></p>
     </div>
   </dialog>
 
@@ -339,12 +338,21 @@
     <div class="container footer-main">
       <p class="footer-copy">© <span id="current-year">2026</span> CFT — Cuba Fashion Technologies. Todos los derechos reservados.</p>
       <nav class="footer-links" aria-label="Enlaces legales">
-        <a href="https://cubanfashioner-del.github.io/plitermicon/html/privacidad.html">Política de privacidad</a>
-        <a href="https://cubanfashioner-del.github.io/plitermicon/html/terminos.html">Términos y condiciones</a>
+        <a href="https://cubanfashioner-del.github.io/plitermicon/html/privacidad.html" data-splash-link>Política de privacidad</a>
+        <a href="https://cubanfashioner-del.github.io/plitermicon/html/terminos.html" data-splash-link>Términos y condiciones</a>
       </nav>
     </div>
   </footer>
 
+  <div class="splash-screen" id="cft-splash" role="status" aria-live="polite" hidden>
+    <div class="splash-content">
+      <img class="splash-logo logo-light" src="../images/logo-cft-claro.jpeg" alt="CFT — Cuba Fashion Technologies">
+      <img class="splash-logo logo-dark" src="../images/logo-cft-oscuro.png" alt="">
+      <span class="splash-spinner" aria-hidden="true"></span>
+      <p class="splash-message">Un momento, estamos redirigiendo…</p>
+    </div>
+  </div>
+  <script src="../js/splash.js" defer></script>
   <script src="../js/main.js" defer></script>
 </body>
 </html>
