@@ -1,0 +1,47 @@
+name: Actualizar noticias
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/noticias-auto.yml'
+      - 'data/noticias.json'
+      - 'package.json'
+      - 'scripts/obtener_noticias.js'
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  actualizar-noticias:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Actualizar noticias RSS
+        run: node scripts/obtener_noticias.js
+
+      - name: Guardar y publicar cambios
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- data/noticias.json; then
+            echo "No hay cambios en las noticias."
+          else
+            git add data/noticias.json
+            git commit -m "Actualizar noticias de tecnología"
+            git push
+          fi
