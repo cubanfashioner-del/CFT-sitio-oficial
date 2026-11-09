@@ -10,8 +10,11 @@
       const openModalButton = document.querySelector("#openModalBtn");
       const storesModal = document.querySelector("#storesModal");
       const openStoresModalButton = document.querySelector("#openStoresModalBtn");
+      const consultingModal = document.querySelector("#consultingModal");
+      const openConsultingModalButton = document.querySelector("#openConsultingModalBtn");
       const networkBackground = document.querySelector(".global-network svg");
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const heroSlides = document.querySelectorAll(".hero-slide");
       const revealElements = document.querySelectorAll("[data-reveal]");
       const newsSection = document.querySelector("#seccion-noticias");
       const newsModal = document.querySelector("#news-modal");
@@ -36,6 +39,15 @@
       let supabaseClient = null;
       const supabaseUrl = "https://fzgkaolxngitwlatsusf.supabase.co";
       const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6Z2thb2x4bmdpdHdsYXRzdXNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2OTE5MDAsImV4cCI6MjEwODI2NzkwMH0.l_l4MV9Scu7PTZLztGam8DP7HGRCh93fCosA4R3m5P4";
+
+      let activeHeroSlide = 0;
+      if (heroSlides.length > 1) {
+        window.setInterval(() => {
+          heroSlides[activeHeroSlide].classList.remove("is-active");
+          activeHeroSlide = (activeHeroSlide + 1) % heroSlides.length;
+          heroSlides[activeHeroSlide].classList.add("is-active");
+        }, 5000);
+      }
 
       let revealObserver = null;
 
@@ -408,6 +420,26 @@
       });
       storesModal.addEventListener("keydown", (event) => {
         if (event.key === "Escape") closeStoresModal();
+      });
+
+      const closeConsultingModal = () => {
+        consultingModal.classList.remove("is-open");
+        document.body.classList.remove("modal-open");
+        openConsultingModalButton.focus();
+      };
+
+      openConsultingModalButton.addEventListener("click", () => {
+        consultingModal.classList.add("is-open");
+        document.body.classList.add("modal-open");
+        consultingModal.querySelector(".modal-close").focus();
+      });
+
+      consultingModal.querySelector(".modal-close").addEventListener("click", closeConsultingModal);
+      consultingModal.addEventListener("click", (event) => {
+        if (event.target === consultingModal) closeConsultingModal();
+      });
+      consultingModal.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeConsultingModal();
       });
 
       accountLink.addEventListener("click", (event) => {

@@ -122,10 +122,16 @@
 
   <main>
     <section class="hero" id="inicio">
+      <div class="hero-carousel" aria-hidden="true">
+        <img class="hero-slide is-active" src="../images/hardware-ensamblaje.png" alt="">
+        <img class="hero-slide" src="../images/desarrollo-software.png" alt="">
+        <img class="hero-slide" src="../images/innovacion-consultoria.jpg" alt="">
+        <img class="hero-slide" src="../images/nosotros-cft.png" alt="">
+      </div>
       <div class="container">
         <div class="hero-inner">
           <span class="eyebrow" data-reveal>Tecnología con identidad</span>
-          <h1 data-reveal>Diseñamos lo que viene. <span class="accent-text">Construimos el futuro.</span></h1>
+          <h1 data-reveal>Bienvenidos a CFT, <span class="accent-text">donde construimos el futuro.</span></h1>
           <p class="hero-copy" data-reveal>Hardware de alto rendimiento, software a medida y consultoría tecnológica para convertir grandes ideas en soluciones reales.</p>
           <div class="hero-actions">
             <a class="button" href="#servicios">
@@ -165,7 +171,7 @@
             <h3 data-reveal>Desarrollo de software</h3>
             <p data-reveal>Aplicaciones web y soluciones digitales funcionales, cuidadas en cada detalle y preparadas para crecer contigo.</p>
             <button class="button button-outline service-card-action" id="openModalBtn" type="button" aria-haspopup="dialog" aria-controls="optionsModal">
-              Ver Opciones de Sitios
+              Ver prototipos de sitios
             </button>
           </article>
 
@@ -173,6 +179,9 @@
             <img class="service-card-image service-card-image-top" src="../images/innovacion-consultoria.jpg" alt="Asesoría de CFT sobre análisis de datos y soluciones tecnológicas">
             <h3 data-reveal>Innovación &amp; consultoría</h3>
             <p data-reveal>Orientación experta para optimizar tu infraestructura, tomar mejores decisiones y resolver retos técnicos complejos.</p>
+            <button class="button button-outline service-card-action" id="openConsultingModalBtn" type="button" aria-haspopup="dialog" aria-controls="consultingModal">
+              Ver opciones
+            </button>
           </article>
         </div>
       </div>
@@ -341,6 +350,36 @@
         <li><button class="option-link" type="button" disabled>Tienda 3 · Próximamente</button></li>
         <li><button class="option-link" type="button" disabled>Tienda 4 · Próximamente</button></li>
         <li><button class="option-link" type="button" disabled>Tienda 5 · Próximamente</button></li>
+      </ul>
+    </div>
+  </div>
+  <div class="options-modal" id="consultingModal" role="dialog" aria-modal="true" aria-labelledby="consultingModalTitle" tabindex="-1">
+    <div class="modal-content options-modal-content">
+      <div class="modal-head">
+        <div>
+          <span class="eyebrow">Innovación &amp; consultoría</span>
+          <h2 id="consultingModalTitle">¿En qué podemos ayudarte?</h2>
+        </div>
+        <button class="modal-close" type="button" aria-label="Cerrar opciones de consultoría">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <img class="stores-modal-image" src="../images/innovacion-consultoria.jpg" alt="Asesoría de CFT sobre análisis de datos y soluciones tecnológicas">
+      <ul class="options-list service-options">
+        <li class="service-option">
+          <strong>Auditoría de Hardware y Redes</strong>
+          <span>Diagnóstico y escalabilidad de equipos.</span>
+        </li>
+        <li class="service-option">
+          <strong>Estrategia Tecnológica</strong>
+          <span>Guía en la selección de componentes y arquitectura local.</span>
+        </li>
+        <li class="service-option">
+          <strong>Resolución de Incidencias</strong>
+          <span>Soporte técnico avanzado para flujos de trabajo exigentes.</span>
+        </li>
       </ul>
     </div>
   </div>
