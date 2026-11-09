@@ -12,7 +12,6 @@
       const openStoresModalButton = document.querySelector("#openStoresModalBtn");
       const consultingModal = document.querySelector("#consultingModal");
       const openConsultingModalButton = document.querySelector("#openConsultingModalBtn");
-      const networkBackground = document.querySelector(".global-network svg");
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
       const heroSlides = document.querySelectorAll(".hero-slide");
       const revealElements = document.querySelectorAll("[data-reveal]");
@@ -28,8 +27,19 @@
       const logoutLabel = document.querySelector("#nav-logout-label");
       const authStatus = document.querySelector("#auth-status");
       const accountModal = document.querySelector("#account-modal");
+      const authRequiredModal = document.querySelector("#auth-required-modal");
       const accountEmail = document.querySelector("#account-email");
+      const accountProfileForm = document.querySelector("#account-profile-form");
+      const accountProfileUsername = document.querySelector("#account-profile-username");
+      const accountProfilePhone = document.querySelector("#account-profile-phone");
+      const accountProfileEmail = document.querySelector("#account-profile-email");
+      const accountProfileSubmit = document.querySelector("#account-profile-submit");
       const accountStatus = document.querySelector("#account-status");
+      const accountDeleteTrigger = document.querySelector("#account-delete-trigger");
+      const accountDeleteForm = document.querySelector("#account-delete-form");
+      const accountDeleteConfirmation = document.querySelector("#account-delete-confirmation");
+      const accountDeleteSubmit = document.querySelector("#account-delete-submit");
+      const accountDeleteCancel = document.querySelector("#account-delete-cancel");
       const changePasswordButton = document.querySelector("#account-change-password");
       const passwordForm = document.querySelector("#account-password-form");
       const newPasswordInput = document.querySelector("#account-new-password");
@@ -37,6 +47,8 @@
       const passwordSubmitButton = document.querySelector("#account-password-submit");
       let currentAccountSession = null;
       let supabaseClient = null;
+      let authInitializationPromise = null;
+      let loadedProfileUserId = null;
       const supabaseUrl = "https://fzgkaolxngitwlatsusf.supabase.co";
       const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6Z2thb2x4bmdpdHdsYXRzdXNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2OTE5MDAsImV4cCI6MjEwODI2NzkwMH0.l_l4MV9Scu7PTZLztGam8DP7HGRCh93fCosA4R3m5P4";
 
@@ -48,6 +60,44 @@
           heroSlides[activeHeroSlide].classList.add("is-active");
         }, 5000);
       }
+
+      const prepareRevealWords = (element) => {
+        if (element.matches("h1")) return;
+
+        const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+        const textNodes = [];
+
+        while (walker.nextNode()) {
+          const textNode = walker.currentNode;
+          if (!textNode.nodeValue.trim()) continue;
+          if (textNode.parentElement.closest("[data-reveal]") !== element) continue;
+          textNodes.push(textNode);
+        }
+
+        let wordIndex = 0;
+        textNodes.forEach((textNode) => {
+          const fragment = document.createDocumentFragment();
+          const parts = textNode.nodeValue.match(/\s+|[^\s]+/g) || [];
+
+          parts.forEach((part) => {
+            if (/^\s+$/.test(part)) {
+              fragment.append(document.createTextNode(part));
+              return;
+            }
+
+            const word = document.createElement("span");
+            word.className = "reveal-word";
+            word.style.setProperty("--word-delay", `${wordIndex * 55}ms`);
+            word.textContent = part;
+            fragment.append(word);
+            wordIndex += 1;
+          });
+
+          textNode.replaceWith(fragment);
+        });
+      };
+
+      revealElements.forEach(prepareRevealWords);
 
       let revealObserver = null;
 
@@ -147,6 +197,7 @@
             readMore.setAttribute("aria-haspopup", "dialog");
             readMore.addEventListener("click", () => openNewsModal(item));
             article.append(readMore);
+            prepareRevealWords(article);
             newsSection.append(article);
           });
 
@@ -211,27 +262,6 @@
 
       year.textContent = String(new Date().getFullYear());
 
-      let parallaxFrame = 0;
-      const updateNetworkParallax = () => {
-        if (parallaxFrame) return;
-
-        parallaxFrame = window.requestAnimationFrame(() => {
-          const scrollableDistance = document.documentElement.scrollHeight - window.innerHeight;
-          const scrollProgress = scrollableDistance > 0
-            ? Math.min(Math.max(window.scrollY / scrollableDistance, 0), 1)
-            : 0;
-          const offset = reducedMotion.matches ? 0 : -68 * scrollProgress;
-
-          networkBackground.style.setProperty("--network-parallax-offset", `${offset.toFixed(2)}px`);
-          parallaxFrame = 0;
-        });
-      };
-
-      window.addEventListener("scroll", updateNetworkParallax, { passive: true });
-      window.addEventListener("resize", updateNetworkParallax);
-      reducedMotion.addEventListener("change", updateNetworkParallax);
-      updateNetworkParallax();
-
       const setTheme = (theme, savePreference = false) => {
         const isDark = theme === "dark";
         document.documentElement.dataset.theme = theme;
@@ -259,6 +289,56 @@
       const getUiHistoryState = () => (
         history.state && typeof history.state === "object" ? history.state : {}
       );
+
+      const showAuthRequiredModal = () => {
+        if (authRequiredModal.open) return;
+
+        authRequiredModal.showModal();
+        document.body.classList.add("modal-open");
+        history.pushState(
+          { ...getUiHistoryState(), [uiHistoryKey]: { type: "modal", id: authRequiredModal.id } },
+          "",
+          window.location.href
+        );
+      };
+
+      const runWhenAuthenticated = async (action) => {
+        if (authInitializationPromise) await authInitializationPromise;
+
+        if (!supabaseClient) {
+          authStatus.textContent = "No se pudo comprobar tu sesión. Recarga la página e inténtalo de nuevo.";
+          authStatus.hidden = false;
+          return false;
+        }
+
+        try {
+          const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+          if (sessionError) throw sessionError;
+          if (!sessionData.session) {
+            setAccountSession(null);
+            showAuthRequiredModal();
+            return false;
+          }
+
+          const { data, error } = await supabaseClient.auth.getUser();
+          if (error) throw error;
+
+          if (!data.user) {
+            setAccountSession(null);
+            showAuthRequiredModal();
+            return false;
+          }
+
+          setAccountSession({ ...sessionData.session, user: data.user });
+          action();
+          return true;
+        } catch (error) {
+          console.error("No se pudo verificar la sesión antes de continuar:", error);
+          authStatus.textContent = "No se pudo comprobar tu sesión. Comprueba tu conexión e inténtalo de nuevo.";
+          authStatus.hidden = false;
+          return false;
+        }
+      };
 
       const clearUiHistoryState = () => {
         const state = getUiHistoryState();
@@ -356,7 +436,7 @@
           if (event.target === modal) modal.close();
         });
         modal.addEventListener("close", () => {
-          if (!document.querySelector(".modal[open]")) {
+          if (!document.querySelector(".modal[open], .options-modal.is-open")) {
             document.body.classList.remove("modal-open");
           }
           const ui = getUiHistoryState()[uiHistoryKey];
@@ -384,7 +464,7 @@
         if (event.key === "Escape") closeOptionsModal();
       });
       optionsModal.querySelectorAll(".option-link").forEach((optionButton) => {
-        optionButton.addEventListener("click", () => {
+        optionButton.addEventListener("click", async () => {
           const target = optionButton.dataset.target;
           switch (target) {
             case "menu-digital":
@@ -392,13 +472,15 @@
             case "landing-page":
             case "portafolio":
             case "corporativo":
-              window.alert(`Opción seleccionada: ${target}`);
+              await runWhenAuthenticated(() => {
+                window.alert(`Opción seleccionada: ${target}`);
+                closeOptionsModal();
+              });
               break;
             default:
               console.error("La opción seleccionada no tiene un destino válido.", target);
               return;
           }
-          closeOptionsModal();
         });
       });
 
@@ -421,6 +503,16 @@
       storesModal.addEventListener("keydown", (event) => {
         if (event.key === "Escape") closeStoresModal();
       });
+      storesModal.querySelectorAll("button.option-link[data-store-url]").forEach((storeButton) => {
+        storeButton.addEventListener("click", async () => {
+          await runWhenAuthenticated(() => window.location.assign(storeButton.dataset.storeUrl));
+        });
+      });
+
+      document.querySelector("#whatsapp-contact-button").addEventListener("click", async (event) => {
+        const whatsappButton = event.currentTarget;
+        await runWhenAuthenticated(() => window.location.assign(whatsappButton.dataset.whatsappUrl));
+      });
 
       const closeConsultingModal = () => {
         consultingModal.classList.remove("is-open");
@@ -442,16 +534,53 @@
         if (event.key === "Escape") closeConsultingModal();
       });
 
-      accountLink.addEventListener("click", (event) => {
+      const setAccountStatus = (message, state = "info") => {
+        accountStatus.textContent = message;
+        accountStatus.dataset.state = state;
+        accountStatus.hidden = !message;
+      };
+
+      const loadAccountProfile = async (user) => {
+        accountProfileSubmit.disabled = true;
+        accountEmail.textContent = user.email || "";
+        accountProfileEmail.value = user.new_email || user.email || "";
+        setAccountStatus("Cargando tus datos personales…");
+
+        try {
+          const { data, error } = await supabaseClient
+            .from("profiles")
+            .select("username, phone")
+            .eq("id", user.id)
+            .maybeSingle();
+          if (error) throw error;
+          if (!data) {
+            throw new Error("No existe el perfil. Aplica la migración de perfiles de Supabase.");
+          }
+
+          accountProfileUsername.value = data.username;
+          accountProfilePhone.value = data.phone || "";
+          loadedProfileUserId = user.id;
+          accountProfileSubmit.disabled = false;
+          setAccountStatus("");
+        } catch (error) {
+          console.error("No se pudo cargar el perfil de Supabase:", error);
+          setAccountStatus("No se pudieron cargar tus datos. Verifica que la migración de perfiles esté aplicada e inténtalo de nuevo.", "error");
+        }
+      };
+
+      accountLink.addEventListener("click", async (event) => {
         if (!currentAccountSession) return;
 
         event.preventDefault();
         closeMenu(false);
-        accountStatus.textContent = "";
-        accountStatus.hidden = true;
+        setAccountStatus("");
         passwordForm.reset();
         passwordForm.hidden = true;
         changePasswordButton.setAttribute("aria-expanded", "false");
+        accountDeleteForm.hidden = true;
+        accountDeleteTrigger.setAttribute("aria-expanded", "false");
+        accountDeleteConfirmation.value = "";
+        accountDeleteSubmit.disabled = true;
 
         if (!accountModal.open) {
           accountModal.showModal();
@@ -462,21 +591,133 @@
             window.location.href
           );
         }
+        if (loadedProfileUserId !== currentAccountSession.user.id) {
+          await loadAccountProfile(currentAccountSession.user);
+        }
+      });
+
+      accountProfileForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        setAccountStatus("");
+        if (!accountProfileForm.reportValidity() || !currentAccountSession || !supabaseClient) return;
+
+        const user = currentAccountSession.user;
+        const username = accountProfileUsername.value.trim().toLowerCase();
+        const phone = accountProfilePhone.value.trim();
+        const email = accountProfileEmail.value.trim();
+        let profileSaved = false;
+        accountProfileSubmit.disabled = true;
+        accountProfileSubmit.setAttribute("aria-busy", "true");
+        accountProfileSubmit.textContent = "Guardando…";
+
+        try {
+          const { data, error } = await supabaseClient
+            .from("profiles")
+            .update({ username, phone })
+            .eq("id", user.id)
+            .select("username, phone")
+            .single();
+          if (error) throw error;
+
+          accountProfileUsername.value = data.username;
+          accountProfilePhone.value = data.phone;
+          profileSaved = true;
+
+          if (email.toLowerCase() !== (user.new_email || user.email || "").toLowerCase()) {
+            const { error: emailError } = await supabaseClient.auth.updateUser({ email });
+            if (emailError) throw emailError;
+            accountProfileEmail.value = email;
+            setAccountStatus("Nombre de usuario y teléfono guardados. Revisa el correo nuevo para confirmar el cambio de dirección.", "success");
+          } else {
+            setAccountStatus("Tus datos personales se guardaron correctamente.", "success");
+          }
+          loadedProfileUserId = user.id;
+        } catch (error) {
+          console.error("No se pudieron guardar los datos de la cuenta:", error);
+          if (error.code === "23505") {
+            setAccountStatus("Ese nombre de usuario ya está en uso. Elige otro.", "error");
+          } else if (profileSaved) {
+            setAccountStatus("El nombre de usuario y el teléfono se guardaron, pero no se pudo iniciar el cambio de correo. Verifica el correo y vuelve a intentarlo.", "error");
+          } else {
+            setAccountStatus("No se pudieron guardar los datos. Comprueba tu conexión e inténtalo de nuevo.", "error");
+          }
+        } finally {
+          accountProfileSubmit.disabled = false;
+          accountProfileSubmit.removeAttribute("aria-busy");
+          accountProfileSubmit.textContent = "Guardar datos personales";
+        }
+      });
+
+      accountDeleteTrigger.addEventListener("click", () => {
+        accountDeleteForm.hidden = false;
+        accountDeleteTrigger.setAttribute("aria-expanded", "true");
+        accountDeleteConfirmation.focus();
+      });
+
+      accountDeleteConfirmation.addEventListener("input", () => {
+        accountDeleteSubmit.disabled = accountDeleteConfirmation.value !== "ELIMINAR";
+      });
+
+      accountDeleteCancel.addEventListener("click", () => {
+        accountDeleteForm.reset();
+        accountDeleteForm.hidden = true;
+        accountDeleteTrigger.setAttribute("aria-expanded", "false");
+        accountDeleteSubmit.disabled = true;
+        accountDeleteTrigger.focus();
+      });
+
+      accountDeleteForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (
+          accountDeleteConfirmation.value !== "ELIMINAR"
+          || !currentAccountSession
+          || !supabaseClient
+        ) return;
+
+        accountDeleteSubmit.disabled = true;
+        accountDeleteSubmit.setAttribute("aria-busy", "true");
+        accountDeleteSubmit.textContent = "Eliminando…";
+        setAccountStatus("");
+
+        try {
+          const { error } = await supabaseClient.functions.invoke("delete-account", {
+            body: { confirmation: "ELIMINAR" },
+          });
+          if (error) throw error;
+
+          const { error: signOutError } = await supabaseClient.auth.signOut({ scope: "local" });
+          if (signOutError) {
+            console.error("La cuenta fue eliminada, pero no se pudo limpiar la sesión local:", signOutError);
+          }
+          window.location.assign("./index.html");
+        } catch (error) {
+          console.error("No se pudo eliminar la cuenta:", error);
+          const status = error.context?.status;
+          if (status === 404) {
+            setAccountStatus("La eliminación aún no está habilitada. Despliega la función segura delete-account de Supabase.", "error");
+          } else if (status === 401) {
+            setAccountStatus("Tu sesión expiró. Inicia sesión de nuevo antes de eliminar la cuenta.", "error");
+          } else {
+            setAccountStatus("No se pudo eliminar la cuenta. Inténtalo de nuevo o contacta con soporte.", "error");
+          }
+        } finally {
+          accountDeleteSubmit.disabled = accountDeleteConfirmation.value !== "ELIMINAR";
+          accountDeleteSubmit.removeAttribute("aria-busy");
+          accountDeleteSubmit.textContent = "Confirmar eliminación";
+        }
       });
 
       changePasswordButton.addEventListener("click", () => {
         const isExpanded = changePasswordButton.getAttribute("aria-expanded") === "true";
         changePasswordButton.setAttribute("aria-expanded", String(!isExpanded));
         passwordForm.hidden = isExpanded;
-        accountStatus.textContent = "";
-        accountStatus.hidden = true;
+        setAccountStatus("");
         if (!isExpanded) newPasswordInput.focus();
       });
 
       passwordForm.addEventListener("submit", async (event) => {
         event.preventDefault();
-        accountStatus.textContent = "";
-        accountStatus.hidden = true;
+        setAccountStatus("");
 
         if (!passwordForm.reportValidity()) return;
         if (newPasswordInput.value !== confirmPasswordInput.value) {
@@ -497,14 +738,10 @@
           passwordForm.reset();
           passwordForm.hidden = true;
           changePasswordButton.setAttribute("aria-expanded", "false");
-          accountStatus.textContent = "Tu contraseña se actualizó correctamente.";
-          accountStatus.dataset.state = "success";
-          accountStatus.hidden = false;
+          setAccountStatus("Tu contraseña se actualizó correctamente.", "success");
         } catch (error) {
           console.error("No se pudo actualizar la contraseña de la cuenta:", error);
-          accountStatus.textContent = "No se pudo actualizar la contraseña. Inténtalo de nuevo.";
-          accountStatus.dataset.state = "error";
-          accountStatus.hidden = false;
+          setAccountStatus("No se pudo actualizar la contraseña. Inténtalo de nuevo.", "error");
         } finally {
           passwordSubmitButton.disabled = false;
           passwordSubmitButton.removeAttribute("aria-busy");
@@ -526,7 +763,9 @@
         accountLink.title = isSignedIn ? session.user.email : "";
         if (isSignedIn) {
           accountEmail.textContent = session.user.email;
+          accountProfileEmail.value = session.user.new_email || session.user.email || "";
         } else if (accountModal.open) {
+          loadedProfileUserId = null;
           accountModal.close();
         }
       };
@@ -535,23 +774,30 @@
         try {
           const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
           const storageKey = `sb-${new URL(supabaseUrl).hostname.split(".")[0]}-auth-token`;
-          const storage = localStorage.getItem(storageKey)
-            ? localStorage
-            : sessionStorage.getItem(storageKey)
-              ? sessionStorage
-              : localStorage;
+          try {
+            localStorage.removeItem(storageKey);
+          } catch (storageError) {
+            console.warn("No se pudo limpiar una sesión persistente anterior.", storageError);
+          }
           const supabase = createClient(supabaseUrl, supabaseAnonKey, {
             auth: {
               autoRefreshToken: true,
               detectSessionInUrl: true,
               persistSession: true,
-              storage
+              storage: sessionStorage
             }
           });
           supabaseClient = supabase;
           const { data, error } = await supabase.auth.getSession();
           if (error) throw error;
-          setAccountSession(data.session);
+          let session = data.session;
+          if (session) {
+            const { data: userData, error: userError } = await supabase.auth.getUser();
+            if (userError) throw userError;
+            session = { ...session, user: userData.user };
+          }
+          setAccountSession(session);
+          if (session) await loadAccountProfile(session.user);
           supabase.auth.onAuthStateChange((_event, session) => setAccountSession(session));
 
           logoutButton.addEventListener("click", async () => {
@@ -565,9 +811,7 @@
               if (signOutError) throw signOutError;
             } catch (error) {
               console.error("No se pudo cerrar la sesión de Supabase:", error);
-              accountStatus.textContent = "No se pudo cerrar la sesión. Inténtalo de nuevo.";
-              accountStatus.dataset.state = "error";
-              accountStatus.hidden = false;
+              setAccountStatus("No se pudo cerrar la sesión. Inténtalo de nuevo.", "error");
             } finally {
               logoutButton.disabled = false;
               logoutLabel.textContent = "Cerrar sesión";
@@ -580,5 +824,5 @@
         }
       }
 
-      initializeAuth();
+      authInitializationPromise = initializeAuth();
     })();
