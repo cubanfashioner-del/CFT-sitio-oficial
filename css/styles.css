@@ -418,45 +418,40 @@
     }
 
     .hero-slide.is-active {
-      animation: hero-slide-left 5s linear both;
       z-index: 1;
+      animation: hero-slide-pan 5s linear both;
     }
 
-    @keyframes hero-slide-left {
+    @keyframes hero-slide-pan {
       0% {
         opacity: 0;
-        transform: translateX(2%) scale(1.12);
+        transform: translateX(5%) scale(1.18);
       }
 
       20% {
         opacity: 1;
       }
 
-      80% {
-        opacity: 1;
-        transform: translateX(-2%) scale(1.12);
-      }
-
       100% {
         opacity: 1;
-        transform: translateX(-2%) scale(1.12);
+        transform: translateX(-5%) scale(1.18);
       }
     }
 
     .hero-slide.is-leaving {
       z-index: 2;
-      animation: hero-slide-fade-out 1s ease both;
+      animation: hero-slide-fade-out 1s linear both;
     }
 
     @keyframes hero-slide-fade-out {
       from {
         opacity: 1;
-        transform: translateX(-2%) scale(1.12);
+        transform: translateX(-5%) scale(1.18);
       }
 
       to {
         opacity: 0;
-        transform: translateX(-2%) scale(1.12);
+        transform: translateX(-5%) scale(1.18);
       }
     }
 
@@ -1559,12 +1554,17 @@
       .hero-slide.is-active {
         animation: none;
         opacity: 1;
-        transform: scale(1.12);
+        transform: scale(1.18);
+      }
+
+      .hero-slide {
+        animation: none;
+        transform: scale(1.18);
       }
 
       .hero-slide.is-leaving {
         display: none;
-        animation: none;
+        opacity: 0;
       }
 
       .js h1[data-reveal] .hero-title-word {

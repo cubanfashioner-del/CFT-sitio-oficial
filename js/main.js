@@ -65,10 +65,9 @@
           nextSlide.classList.add("is-active");
 
           window.setTimeout(() => previousSlide.classList.remove("is-leaving"), 1000);
-          window.setTimeout(showNextHeroSlide, 5000);
         };
 
-        window.setTimeout(showNextHeroSlide, 4000);
+        window.setInterval(showNextHeroSlide, 5000);
       }
 
       const prepareRevealWords = (element) => {
