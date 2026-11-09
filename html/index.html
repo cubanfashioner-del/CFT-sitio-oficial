@@ -94,7 +94,6 @@
       <nav class="nav-links" id="main-navigation" aria-label="Navegación principal">
         <a href="#inicio">Inicio</a>
         <a href="#servicios">Servicios</a>
-        <a href="#tienda">Tienda</a>
         <a href="#noticias">Noticias</a>
         <a href="#nosotros">Nosotros</a>
         <button class="theme-toggle" type="button" aria-label="Cambiar a modo oscuro" aria-pressed="false" title="Cambiar a modo oscuro">
@@ -135,7 +134,6 @@
                 <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </a>
-            <a class="button button-outline" href="https://wa.me/5350727220" target="_blank" rel="noopener noreferrer">Conversemos</a>
           </div>
           <div class="hero-note" data-reveal>Ingeniería precisa. Visión sin límites.</div>
         </div>
@@ -154,63 +152,29 @@
 
         <div class="service-grid">
           <article class="service-card">
-            <div class="icon-box" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/>
-                <path d="M8 20h8m-4-4v4m-5-9h2m2-3h2m2 5h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-              </svg>
-            </div>
+            <img class="service-card-image service-card-image-top" src="../images/hardware-ensamblaje.png" alt="Espacio de ensamblaje CFT con una computadora de alto rendimiento y sus componentes">
             <h3 data-reveal>Hardware &amp; ensamblaje</h3>
             <p data-reveal>Computadoras y equipos de alto rendimiento, configurados a la medida de tus proyectos, necesidades y presupuesto.</p>
+            <button class="button button-outline service-card-action" id="openStoresModalBtn" type="button" aria-haspopup="dialog" aria-controls="storesModal">
+              Ver tiendas
+            </button>
           </article>
 
           <article class="service-card">
-            <div class="icon-box" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="m8 7-5 5 5 5m8-10 5 5-5 5m-2-13-4 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
+            <img class="service-card-image service-card-image-top" src="../images/desarrollo-software.png" alt="Estación CFT de desarrollo de software con soluciones digitales a medida">
             <h3 data-reveal>Desarrollo de software</h3>
             <p data-reveal>Aplicaciones web y soluciones digitales funcionales, cuidadas en cada detalle y preparadas para crecer contigo.</p>
+            <button class="button button-outline service-card-action" id="openModalBtn" type="button" aria-haspopup="dialog" aria-controls="optionsModal">
+              Ver Opciones de Sitios
+            </button>
           </article>
 
           <article class="service-card">
-            <div class="icon-box" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.64 5.64l2.12 2.12m8.48 8.48 2.12 2.12m0-12.72-2.12 2.12m-8.48 8.48-2.12 2.12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.6"/>
-                <circle cx="12" cy="12" r="1.4" fill="currentColor"/>
-              </svg>
-            </div>
+            <img class="service-card-image service-card-image-top" src="../images/innovacion-consultoria.jpg" alt="Asesoría de CFT sobre análisis de datos y soluciones tecnológicas">
             <h3 data-reveal>Innovación &amp; consultoría</h3>
             <p data-reveal>Orientación experta para optimizar tu infraestructura, tomar mejores decisiones y resolver retos técnicos complejos.</p>
           </article>
         </div>
-      </div>
-    </section>
-
-    <section class="section" id="tienda">
-      <div class="container store-section">
-        <div class="store-copy">
-          <span class="eyebrow" data-reveal>Compra online</span>
-          <h2 data-reveal>La energía que necesitas, en un solo lugar.</h2>
-          <p data-reveal>Visita nuestra tienda y encuentra baterías y soluciones de energía en Baterías Habana.</p>
-        </div>
-        <a class="store-card" href="https://cubanfashioner-del.github.io/baterias-habana/" target="_blank" rel="noopener noreferrer" aria-label="Visitar la tienda Baterías Habana, se abre en una pestaña nueva">
-          <span class="store-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="7" width="17" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/>
-              <path d="M20 10h1.5v4H20M10 9.5l-2 3h3l-1 2m4-5-2 3h3l-1 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <span class="store-card-copy">
-            <strong>Baterías Habana</strong>
-            <span>Explora la tienda online</span>
-          </span>
-          <svg class="store-arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M14 4h6v6m-1-5-9 9m-2-7H5a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </a>
       </div>
     </section>
 
@@ -232,43 +196,25 @@
 
     <section class="section section-muted" id="nosotros">
       <div class="container about-grid">
-        <div class="about-emblem" aria-hidden="true">
-          <img class="logo-light" src="../images/logo-cft-claro.jpeg" alt="">
-          <img class="logo-dark" src="../images/logo-cft-oscuro.png" alt="">
+        <div class="about-emblem">
+          <img class="about-image" src="../images/nosotros-cft.png" alt="Ilustración de un cocodrilo tecnológico que representa la identidad de CFT">
         </div>
         <div class="about-copy">
           <span class="eyebrow" data-reveal>Nuestra esencia</span>
           <h2 data-reveal>El cocodrilo evoluciona. La visión permanece.</h2>
           <p data-reveal>CFT — Cuba Fashion Technologies nace de una idea: unir carácter, creatividad y tecnología para abrir nuevos caminos. El cocodrilo de la marca representa esa evolución constante: una identidad que se adapta, explora y avanza.</p>
           <p data-reveal>Hoy llevamos esa energía al hardware, el desarrollo de software y la consultoría. Escuchamos cada reto, pensamos con visión de futuro y trabajamos para convertir posibilidades en soluciones concretas.</p>
-          <a class="text-link" href="https://wa.me/5350727220" target="_blank" rel="noopener noreferrer">
-            Conoce lo que podemos crear
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
         </div>
       </div>
     </section>
 
-    <section class="contact-band" id="contacto" aria-label="Contacto">
-      <div class="container">
-        <div class="contact-panel">
-          <div>
-            <span class="eyebrow" data-reveal>Tu próximo proyecto empieza aquí</span>
-            <h2 data-reveal>¿Hablamos de tecnología?</h2>
-            <p data-reveal>Cuéntanos tu idea. Estamos a un mensaje de distancia.</p>
-          </div>
-          <a class="button" href="https://wa.me/5350727220" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp al +53 50727220">
-            Escribir por WhatsApp
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
-        </div>
-      </div>
-    </section>
   </main>
+
+  <a class="whatsapp-float" href="https://wa.me/5350727220" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp al +53 50727220" title="Contactar por WhatsApp">
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <path fill="currentColor" d="M16.04 3C8.86 3 3.02 8.78 3.02 15.9c0 2.28.61 4.5 1.77 6.45L3 29l6.83-1.77a13.1 13.1 0 0 0 6.2 1.56h.01c7.18 0 13.02-5.79 13.02-12.9 0-3.45-1.36-6.7-3.83-9.14A12.95 12.95 0 0 0 16.04 3Zm0 23.6h-.01c-1.9 0-3.77-.5-5.4-1.46l-.39-.23-4.05 1.05 1.08-3.92-.25-.4a10.65 10.65 0 0 1-1.66-5.74c0-5.86 4.82-10.63 10.7-10.63 2.85 0 5.53 1.1 7.54 3.1a10.5 10.5 0 0 1 3.13 7.52c0 5.87-4.81 10.64-10.69 10.64Zm5.87-7.97c-.32-.16-1.9-.94-2.2-1.05-.3-.1-.51-.16-.72.16-.22.32-.83 1.05-1.02 1.26-.19.22-.38.24-.7.08-.33-.16-1.36-.5-2.6-1.6-.96-.84-1.6-1.88-1.8-2.2-.19-.31-.02-.49.15-.65.14-.14.32-.37.48-.55.16-.19.21-.32.32-.54.1-.21.05-.4-.03-.56-.08-.16-.72-1.72-.99-2.36-.26-.62-.52-.54-.72-.55l-.62-.01c-.22 0-.56.08-.86.4-.3.32-1.13 1.1-1.13 2.66 0 1.57 1.16 3.08 1.32 3.29.16.21 2.28 3.45 5.52 4.84.77.33 1.37.53 1.83.68.77.24 1.47.21 2.02.13.62-.09 1.9-.78 2.17-1.53.27-.75.27-1.39.19-1.53-.08-.14-.3-.22-.62-.38Z"/>
+    </svg>
+  </a>
 
   <dialog class="modal news-modal" id="news-modal" aria-labelledby="news-modal-title">
     <div class="modal-content news-modal-content">
@@ -350,6 +296,52 @@
       <img class="splash-logo logo-dark" src="../images/logo-cft-oscuro.png" alt="">
       <span class="splash-spinner" aria-hidden="true"></span>
       <p class="splash-message">Un momento, estamos redirigiendo…</p>
+    </div>
+  </div>
+  <div class="options-modal" id="optionsModal" role="dialog" aria-modal="true" aria-labelledby="optionsModalTitle" tabindex="-1">
+    <div class="modal-content options-modal-content">
+      <div class="modal-head">
+        <div>
+          <span class="eyebrow">Soluciones digitales</span>
+          <h2 id="optionsModalTitle">Elige el sitio que necesitas</h2>
+        </div>
+        <button class="modal-close" type="button" aria-label="Cerrar opciones">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <img class="software-modal-image" src="../images/desarrollo-software.png" alt="Estación CFT de desarrollo de software con soluciones digitales a medida">
+      <ul class="options-list">
+        <li><button class="option-link" type="button" data-target="menu-digital">Menú digital interactivo</button></li>
+        <li><button class="option-link" type="button" data-target="tienda-online">Tienda online</button></li>
+        <li><button class="option-link" type="button" data-target="landing-page">Landing Page</button></li>
+        <li><button class="option-link" type="button" data-target="portafolio">Portafolio Profesional</button></li>
+        <li><button class="option-link" type="button" data-target="corporativo">Sitio Corporativo</button></li>
+      </ul>
+    </div>
+  </div>
+  <div class="options-modal" id="storesModal" role="dialog" aria-modal="true" aria-labelledby="storesModalTitle" tabindex="-1">
+    <div class="modal-content options-modal-content">
+      <div class="modal-head">
+        <div>
+          <span class="eyebrow">Tiendas CFT</span>
+          <h2 id="storesModalTitle">Explora nuestras tiendas</h2>
+        </div>
+        <button class="modal-close" type="button" aria-label="Cerrar tiendas">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <img class="stores-modal-image" src="../images/hardware-ensamblaje.png" alt="Computadora de alto rendimiento en el espacio de ensamblaje CFT">
+      <ul class="options-list">
+        <li><a class="option-link" href="https://cubanfashioner-del.github.io/baterias-habana/" target="_blank" rel="noopener noreferrer">Baterías para laptops</a></li>
+        <li><a class="option-link" href="https://detodo.si/index.html" target="_blank" rel="noopener noreferrer">Tienda detodo</a></li>
+        <li><button class="option-link" type="button" disabled>Tienda 3 · Próximamente</button></li>
+        <li><button class="option-link" type="button" disabled>Tienda 4 · Próximamente</button></li>
+        <li><button class="option-link" type="button" disabled>Tienda 5 · Próximamente</button></li>
+      </ul>
     </div>
   </div>
   <script src="../js/splash.js" defer></script>

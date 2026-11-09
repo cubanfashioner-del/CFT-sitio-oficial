@@ -6,6 +6,10 @@
       const themeLabel = themeButton.querySelector(".theme-toggle-label");
       const themeColor = document.querySelector('meta[name="theme-color"]');
       const modalTriggers = document.querySelectorAll("[data-modal]");
+      const optionsModal = document.querySelector("#optionsModal");
+      const openModalButton = document.querySelector("#openModalBtn");
+      const storesModal = document.querySelector("#storesModal");
+      const openStoresModalButton = document.querySelector("#openStoresModalBtn");
       const networkBackground = document.querySelector(".global-network svg");
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
       const revealElements = document.querySelectorAll("[data-reveal]");
@@ -346,6 +350,64 @@
           const ui = getUiHistoryState()[uiHistoryKey];
           if (ui?.type === "modal" && ui.id === modal.id) history.back();
         });
+      });
+
+      const closeOptionsModal = () => {
+        optionsModal.classList.remove("is-open");
+        document.body.classList.remove("modal-open");
+        openModalButton.focus();
+      };
+
+      openModalButton.addEventListener("click", () => {
+        optionsModal.classList.add("is-open");
+        document.body.classList.add("modal-open");
+        optionsModal.querySelector(".modal-close").focus();
+      });
+
+      optionsModal.querySelector(".modal-close").addEventListener("click", closeOptionsModal);
+      optionsModal.addEventListener("click", (event) => {
+        if (event.target === optionsModal) closeOptionsModal();
+      });
+      optionsModal.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeOptionsModal();
+      });
+      optionsModal.querySelectorAll(".option-link").forEach((optionButton) => {
+        optionButton.addEventListener("click", () => {
+          const target = optionButton.dataset.target;
+          switch (target) {
+            case "menu-digital":
+            case "tienda-online":
+            case "landing-page":
+            case "portafolio":
+            case "corporativo":
+              window.alert(`Opción seleccionada: ${target}`);
+              break;
+            default:
+              console.error("La opción seleccionada no tiene un destino válido.", target);
+              return;
+          }
+          closeOptionsModal();
+        });
+      });
+
+      const closeStoresModal = () => {
+        storesModal.classList.remove("is-open");
+        document.body.classList.remove("modal-open");
+        openStoresModalButton.focus();
+      };
+
+      openStoresModalButton.addEventListener("click", () => {
+        storesModal.classList.add("is-open");
+        document.body.classList.add("modal-open");
+        storesModal.querySelector(".modal-close").focus();
+      });
+
+      storesModal.querySelector(".modal-close").addEventListener("click", closeStoresModal);
+      storesModal.addEventListener("click", (event) => {
+        if (event.target === storesModal) closeStoresModal();
+      });
+      storesModal.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeStoresModal();
       });
 
       accountLink.addEventListener("click", (event) => {
