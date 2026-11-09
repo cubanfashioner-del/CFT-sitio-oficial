@@ -54,11 +54,21 @@
 
       let activeHeroSlide = 0;
       if (heroSlides.length > 1) {
-        window.setInterval(() => {
-          heroSlides[activeHeroSlide].classList.remove("is-active");
+        const showNextHeroSlide = () => {
+          const previousSlide = heroSlides[activeHeroSlide];
           activeHeroSlide = (activeHeroSlide + 1) % heroSlides.length;
-          heroSlides[activeHeroSlide].classList.add("is-active");
-        }, 5000);
+          const nextSlide = heroSlides[activeHeroSlide];
+
+          previousSlide.classList.remove("is-active");
+          previousSlide.classList.add("is-leaving");
+          nextSlide.classList.remove("is-leaving");
+          nextSlide.classList.add("is-active");
+
+          window.setTimeout(() => previousSlide.classList.remove("is-leaving"), 1000);
+          window.setTimeout(showNextHeroSlide, 5000);
+        };
+
+        window.setTimeout(showNextHeroSlide, 4000);
       }
 
       const prepareRevealWords = (element) => {
