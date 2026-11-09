@@ -251,11 +251,7 @@
         newsModal.scrollTop = 0;
         newsModal.showModal();
         document.body.classList.add("modal-open");
-        history.pushState(
-          { ...getUiHistoryState(), [uiHistoryKey]: { type: "modal", id: newsModal.id } },
-          "",
-          window.location.href
-        );
+        pushModalHistory(newsModal);
       }
 
       if (newsSection) loadNews();
@@ -290,16 +286,31 @@
         history.state && typeof history.state === "object" ? history.state : {}
       );
 
+      const pushModalHistory = (modal) => {
+        history.pushState(
+          { ...getUiHistoryState(), [uiHistoryKey]: { type: "modal", id: modal.id } },
+          "",
+          window.location.href
+        );
+      };
+
+      const closeCustomModal = (modal, opener) => {
+        modal.classList.remove("is-open");
+        if (!document.querySelector(".modal[open], .options-modal.is-open")) {
+          document.body.classList.remove("modal-open");
+        }
+        opener.focus();
+
+        const ui = getUiHistoryState()[uiHistoryKey];
+        if (ui?.type === "modal" && ui.id === modal.id) history.back();
+      };
+
       const showAuthRequiredModal = () => {
         if (authRequiredModal.open) return;
 
         authRequiredModal.showModal();
         document.body.classList.add("modal-open");
-        history.pushState(
-          { ...getUiHistoryState(), [uiHistoryKey]: { type: "modal", id: authRequiredModal.id } },
-          "",
-          window.location.href
-        );
+        pushModalHistory(authRequiredModal);
       };
 
       const runWhenAuthenticated = async (action) => {
@@ -386,10 +397,19 @@
 
       const syncUiWithHistory = (state) => {
         const ui = state?.[uiHistoryKey];
-        const openModal = document.querySelector(".modal[open]");
+        const openModal = document.querySelector(".modal[open]")
+          || document.querySelector(".options-modal.is-open");
 
         if (openModal && (ui?.type !== "modal" || ui.id !== openModal.id)) {
-          openModal.close();
+          if (openModal instanceof HTMLDialogElement) {
+            openModal.close();
+          } else if (openModal === optionsModal) {
+            closeCustomModal(optionsModal, openModalButton);
+          } else if (openModal === storesModal) {
+            closeCustomModal(storesModal, openStoresModalButton);
+          } else if (openModal === consultingModal) {
+            closeCustomModal(consultingModal, openConsultingModalButton);
+          }
         }
 
         if (ui?.type === "menu") {
@@ -405,6 +425,9 @@
           if (modal instanceof HTMLDialogElement && !modal.open) {
             modal.showModal();
             document.body.classList.add("modal-open");
+          } else if (modal instanceof HTMLElement && modal.classList.contains("options-modal")) {
+            modal.classList.add("is-open");
+            document.body.classList.add("modal-open");
           }
         }
       };
@@ -419,11 +442,7 @@
             if (modal.open) return;
             modal.showModal();
             document.body.classList.add("modal-open");
-            history.pushState(
-              { ...getUiHistoryState(), [uiHistoryKey]: { type: "modal", id: modal.id } },
-              "",
-              window.location.href
-            );
+            pushModalHistory(modal);
           }
         });
       });
@@ -445,14 +464,14 @@
       });
 
       const closeOptionsModal = () => {
-        optionsModal.classList.remove("is-open");
-        document.body.classList.remove("modal-open");
-        openModalButton.focus();
+        closeCustomModal(optionsModal, openModalButton);
       };
 
       openModalButton.addEventListener("click", () => {
+        if (optionsModal.classList.contains("is-open")) return;
         optionsModal.classList.add("is-open");
         document.body.classList.add("modal-open");
+        pushModalHistory(optionsModal);
         optionsModal.querySelector(".modal-close").focus();
       });
 
@@ -485,14 +504,14 @@
       });
 
       const closeStoresModal = () => {
-        storesModal.classList.remove("is-open");
-        document.body.classList.remove("modal-open");
-        openStoresModalButton.focus();
+        closeCustomModal(storesModal, openStoresModalButton);
       };
 
       openStoresModalButton.addEventListener("click", () => {
+        if (storesModal.classList.contains("is-open")) return;
         storesModal.classList.add("is-open");
         document.body.classList.add("modal-open");
+        pushModalHistory(storesModal);
         storesModal.querySelector(".modal-close").focus();
       });
 
@@ -515,14 +534,14 @@
       });
 
       const closeConsultingModal = () => {
-        consultingModal.classList.remove("is-open");
-        document.body.classList.remove("modal-open");
-        openConsultingModalButton.focus();
+        closeCustomModal(consultingModal, openConsultingModalButton);
       };
 
       openConsultingModalButton.addEventListener("click", () => {
+        if (consultingModal.classList.contains("is-open")) return;
         consultingModal.classList.add("is-open");
         document.body.classList.add("modal-open");
+        pushModalHistory(consultingModal);
         consultingModal.querySelector(".modal-close").focus();
       });
 
@@ -585,11 +604,7 @@
         if (!accountModal.open) {
           accountModal.showModal();
           document.body.classList.add("modal-open");
-          history.pushState(
-            { ...getUiHistoryState(), [uiHistoryKey]: { type: "modal", id: accountModal.id } },
-            "",
-            window.location.href
-          );
+          pushModalHistory(accountModal);
         }
         if (loadedProfileUserId !== currentAccountSession.user.id) {
           await loadAccountProfile(currentAccountSession.user);
