@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f0e">
+  <meta name="description" content="Confirmación de correo electrónico de CFT — Cuba Fashion Technologies.">
+  <title>Verificando correo | CFT</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #f1f5f9;
+      background: #0b0f0e;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      display: grid;
+      min-height: 100vh;
+      min-height: 100svh;
+      margin: 0;
+      padding: 24px;
+      place-items: center;
+      background:
+        radial-gradient(ellipse at 50% 0, rgba(212, 175, 55, .1), transparent 48%),
+        #0b0f0e;
+    }
+
+    .verification-card {
+      width: min(100%, 480px);
+      padding: clamp(28px, 7vw, 48px);
+      border: 1px solid rgba(241, 245, 249, .1);
+      border-radius: 24px;
+      background: rgba(19, 27, 24, .94);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .35);
+      text-align: center;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 36px;
+      color: #f1f5f9;
+      text-align: left;
+      text-decoration: none;
+    }
+
+    .brand img {
+      width: 48px;
+      height: 48px;
+      border: 1px solid rgba(241, 245, 249, .12);
+      border-radius: 14px;
+      object-fit: cover;
+    }
+
+    .brand-name {
+      display: grid;
+      gap: 3px;
+      font-size: 1rem;
+      font-weight: 750;
+      letter-spacing: .04em;
+    }
+
+    .brand-name span {
+      color: #94a3b8;
+      font-size: .68rem;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: #d4af37;
+      font-size: .74rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.55rem, 5vw, 2rem);
+      letter-spacing: -.04em;
+    }
+
+    .status-message {
+      min-height: 3.2em;
+      margin: 14px 0 28px;
+      color: #aeb8b4;
+      font-size: .98rem;
+      line-height: 1.65;
+    }
+
+    .progress-track {
+      overflow: hidden;
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(241, 245, 249, .1);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #b48a3d, #e2c45c);
+      box-shadow: 0 0 18px rgba(212, 175, 55, .35);
+      transition: width 80ms linear;
+    }
+
+    .progress-label {
+      display: block;
+      margin-top: 10px;
+      color: #64748b;
+      font-size: .78rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .continue-link {
+      display: none;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 26px;
+      padding: 0 22px;
+      border: 1px solid #d4af37;
+      border-radius: 999px;
+      background: #d4af37;
+      color: #0b0f0e;
+      font-size: .9rem;
+      font-weight: 750;
+      text-decoration: none;
+      transition: background .2s ease, transform .2s ease;
+    }
+
+    .continue-link:hover {
+      transform: translateY(-2px);
+      background: #e2c45c;
+    }
+
+    .continue-link:focus-visible {
+      outline: 3px solid #f1f5f9;
+      outline-offset: 4px;
+    }
+
+    .verification-card[data-state="ready"] .continue-link,
+    .verification-card[data-state="error"] .continue-link {
+      display: inline-flex;
+    }
+
+    .verification-card[data-state="error"] .eyebrow {
+      color: #fda4af;
+    }
+
+    .verification-card[data-state="error"] .progress-bar {
+      background: #e87979;
+      box-shadow: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="verification-card" id="verification-card" aria-labelledby="page-title">
+    <a class="brand" href="index.html" aria-label="CFT — Cuba Fashion Technologies">
+      <img src="../images/logo-cft-oscuro.png" alt="">
+      <span class="brand-name">CFT<span>Cuba Fashion Technologies</span></span>
+    </a>
+    <p class="eyebrow" id="verification-label">Acceso seguro</p>
+    <h1 id="page-title">Verificando correo electrónico</h1>
+    <p class="status-message" id="status-message" role="status" aria-live="polite">Estamos preparando tu sesión segura. No cierres esta página.</p>
+    <div
+      class="progress-track"
+      id="progress-track"
+      role="progressbar"
+      aria-label="Progreso de verificación"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+    >
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <span class="progress-label" id="progress-label">0%</span>
+    <a class="continue-link" id="continue-link" href="index.html">Continuar a CFT</a>
+  </main>
+
+  <script>
+    (() => {
+      const card = document.querySelector("#verification-card");
+      const heading = document.querySelector("#page-title");
+      const eyebrow = document.querySelector("#verification-label");
+      const message = document.querySelector("#status-message");
+      const progressTrack = document.querySelector("#progress-track");
+      const progressBar = document.querySelector("#progress-bar");
+      const progressLabel = document.querySelector("#progress-label");
+      const continueLink = document.querySelector("#continue-link");
+      const query = new URLSearchParams(window.location.search);
+      const fragment = new URLSearchParams(window.location.hash.slice(1));
+      const error = query.get("error_description")
+        || query.get("error")
+        || fragment.get("error_description")
+        || fragment.get("error");
+      const hasAuthPayload = ["access_token", "code", "token_hash"].some(
+        (key) => query.has(key) || fragment.has(key)
+      );
+      const destination = new URL("index.html", window.location.href);
+
+      destination.search = window.location.search;
+      destination.hash = window.location.hash;
+
+      if (error || !hasAuthPayload) {
+        card.dataset.state = "error";
+        eyebrow.textContent = "No se pudo verificar";
+        heading.textContent = "Revisa el enlace de confirmación";
+        message.textContent = error
+          ? "El enlace de Supabase expiró o ya fue utilizado. Solicita un nuevo correo de verificación."
+          : "No recibimos los datos de confirmación de Supabase. Abre el enlace completo del correo o solicita uno nuevo.";
+        progressTrack.hidden = true;
+        progressLabel.hidden = true;
+        continueLink.href = "index.html";
+        continueLink.textContent = "Ir al sitio de CFT";
+        return;
+      }
+
+      destination.searchParams.set("cft_email_confirmation", "1");
+      continueLink.href = destination.href;
+      progressBar.style.width = "0%";
+
+      const duration = 2800;
+      const start = performance.now();
+      const updateProgress = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const percent = Math.round(progress * 100);
+        progressBar.style.width = `${percent}%`;
+        progressTrack.setAttribute("aria-valuenow", String(percent));
+        progressLabel.textContent = `${percent}%`;
+
+        if (progress < 1) {
+          window.requestAnimationFrame(updateProgress);
+          return;
+        }
+
+        card.dataset.state = "ready";
+        eyebrow.textContent = "Verificación completada";
+        heading.textContent = "¡Correo verificado con éxito!";
+        message.textContent = "Continuando a CFT para validar tu sesión y mantenerla iniciada en este navegador.";
+        continueLink.focus({ preventScroll: true });
+        window.setTimeout(() => window.location.replace(destination.href), 900);
+      };
+
+      window.requestAnimationFrame(updateProgress);
+    })();
+  </script>
+</body>
+</html>

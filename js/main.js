@@ -21,6 +21,8 @@
       const newsModalBody = document.querySelector("#news-modal-body");
       const newsModalSource = document.querySelector("#news-modal-source");
       const uiHistoryKey = "cftUi";
+      const emailConfirmationParam = "cft_email_confirmation";
+      const emailConfirmationRedirect = new URLSearchParams(window.location.search).get(emailConfirmationParam) === "1";
       const accountLink = document.querySelector("#nav-account-link");
       const accountLabel = document.querySelector("#nav-account-label");
       const logoutButton = document.querySelector("#nav-logout");
@@ -812,6 +814,29 @@
             }
           });
           supabaseClient = supabase;
+          const callbackQuery = new URLSearchParams(window.location.search);
+          const callbackFragment = new URLSearchParams(window.location.hash.slice(1));
+          const tokenHash = callbackQuery.get("token_hash") || callbackFragment.get("token_hash");
+          const verificationType = callbackQuery.get("type") || callbackFragment.get("type");
+          if (tokenHash) {
+            if (verificationType !== "signup" && verificationType !== "email") {
+              throw new Error("El enlace de verificación tiene un tipo no admitido.");
+            }
+            const { error: verificationError } = await supabase.auth.verifyOtp({
+              token_hash: tokenHash,
+              type: verificationType
+            });
+            if (verificationError) throw verificationError;
+
+            const cleanUrl = new URL(window.location.href);
+            cleanUrl.searchParams.delete("token_hash");
+            cleanUrl.searchParams.delete("type");
+            const cleanFragment = new URLSearchParams(cleanUrl.hash.slice(1));
+            cleanFragment.delete("token_hash");
+            cleanFragment.delete("type");
+            cleanUrl.hash = cleanFragment.toString();
+            window.history.replaceState(null, "", cleanUrl);
+          }
           const { data, error } = await supabase.auth.getSession();
           if (error) throw error;
           let session = data.session;
@@ -821,6 +846,17 @@
             session = { ...session, user: userData.user };
           }
           setAccountSession(session);
+          if (emailConfirmationRedirect) {
+            authStatus.dataset.state = session?.user.email_confirmed_at ? "success" : "error";
+            authStatus.textContent = session?.user.email_confirmed_at
+              ? "¡Correo verificado con éxito! Tu sesión está iniciada."
+              : "No se pudo validar el correo. Solicita un nuevo enlace de verificación.";
+            authStatus.hidden = false;
+
+            const cleanUrl = new URL(window.location.href);
+            cleanUrl.searchParams.delete(emailConfirmationParam);
+            window.history.replaceState(null, "", cleanUrl);
+          }
           if (session) await loadAccountProfile(session.user);
           supabase.auth.onAuthStateChange((_event, session) => setAccountSession(session));
 
@@ -843,6 +879,7 @@
           });
         } catch (error) {
           console.error("No se pudo comprobar la sesión de Supabase:", error);
+          authStatus.dataset.state = "error";
           authStatus.textContent = "No se pudo comprobar el estado de la sesión.";
           authStatus.hidden = false;
         }

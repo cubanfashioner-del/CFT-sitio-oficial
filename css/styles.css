@@ -279,6 +279,19 @@
       background: var(--accent-soft);
     }
 
+    .button-outline.service-card-action,
+    .button-outline.news-read-more {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--button-text);
+    }
+
+    .button-outline.service-card-action:hover,
+    .button-outline.news-read-more:hover {
+      border-color: var(--button-hover);
+      background: var(--button-hover);
+    }
+
     .nav-account {
       display: inline-flex;
       align-items: center;
@@ -328,6 +341,10 @@
       max-width: 220px;
       color: var(--danger, #b42318);
       font-size: .78rem;
+    }
+
+    .auth-status[data-state="success"] {
+      color: var(--accent);
     }
 
     .theme-toggle {
