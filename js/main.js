@@ -781,10 +781,10 @@
       const setAccountSession = (session) => {
         const isSignedIn = Boolean(session);
         currentAccountSession = session;
-        accountLabel.textContent = isSignedIn ? "Mi cuenta" : "Iniciar sesión";
+        accountLabel.textContent = isSignedIn ? "Mi cuenta" : "Inicia o regístrate";
         accountLink.setAttribute(
           "aria-label",
-          isSignedIn ? `Cuenta de ${session.user.email}` : "Iniciar sesión o crear una cuenta"
+          isSignedIn ? `Cuenta de ${session.user.email}` : "Inicia o regístrate"
         );
         accountLink.title = isSignedIn ? session.user.email : "";
         if (isSignedIn) {
