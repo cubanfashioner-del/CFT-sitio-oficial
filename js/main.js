@@ -57,16 +57,33 @@
       let activeHeroSlide = 0;
       if (heroSlides.length > 1) {
         const showNextHeroSlide = () => {
+          const nextIndex = (activeHeroSlide + 1) % heroSlides.length;
           const previousSlide = heroSlides[activeHeroSlide];
-          activeHeroSlide = (activeHeroSlide + 1) % heroSlides.length;
-          const nextSlide = heroSlides[activeHeroSlide];
+          const nextSlide = heroSlides[nextIndex];
+          const activateNextSlide = () => {
+            activeHeroSlide = nextIndex;
+            previousSlide.classList.remove("is-active");
+            previousSlide.classList.add("is-leaving");
+            nextSlide.classList.remove("is-leaving");
+            nextSlide.classList.add("is-active");
 
-          previousSlide.classList.remove("is-active");
-          previousSlide.classList.add("is-leaving");
-          nextSlide.classList.remove("is-leaving");
-          nextSlide.classList.add("is-active");
+            window.setTimeout(() => previousSlide.classList.remove("is-leaving"), 1000);
+          };
 
-          window.setTimeout(() => previousSlide.classList.remove("is-leaving"), 1000);
+          if (nextSlide.dataset.src) {
+            const imageUrl = nextSlide.dataset.src;
+            nextSlide.addEventListener("load", () => {
+              delete nextSlide.dataset.src;
+              activateNextSlide();
+            }, { once: true });
+            nextSlide.addEventListener("error", () => {
+              console.error(`No se pudo cargar la imagen del carrusel: ${imageUrl}`);
+            }, { once: true });
+            nextSlide.src = imageUrl;
+            return;
+          }
+
+          activateNextSlide();
         };
 
         window.setInterval(showNextHeroSlide, 5000);

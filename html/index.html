@@ -16,6 +16,9 @@
   <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon.png">
   <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="../site.webmanifest">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://fzgkaolxngitwlatsusf.supabase.co">
+  <link rel="preload" as="image" href="../images/hardware-ensamblaje-optimized.jpg" fetchpriority="high">
   <title>CFT — Cuba Fashion Technologies | Tecnología con visión</title>
   <script>
     document.documentElement.classList.add("js");
@@ -36,8 +39,8 @@
     <div class="container nav-wrap">
       <a class="brand" href="#inicio" aria-label="CFT — Cuba Fashion Technologies, inicio">
         <span class="brand-mark" aria-hidden="true">
-          <img class="logo-light" src="../images/logo-cft-claro.jpeg" alt="">
-          <img class="logo-dark" src="../images/logo-cft-oscuro.png" alt="">
+          <img class="logo-light" src="../images/logo-cft-claro-optimized.jpg" width="160" height="160" alt="">
+          <img class="logo-dark" src="../images/logo-cft-oscuro-optimized.jpg" width="160" height="160" alt="">
         </span>
         <span class="brand-name">CFT<span>Cuba Fashion Technologies</span></span>
       </a>
@@ -80,10 +83,10 @@
   <main>
     <section class="hero" id="inicio">
       <div class="hero-carousel" aria-hidden="true">
-        <img class="hero-slide is-active" src="../images/hardware-ensamblaje.png" alt="">
-        <img class="hero-slide" src="../images/desarrollo-software.png" alt="">
-        <img class="hero-slide" src="../images/innovacion-consultoria.jpg" alt="">
-        <img class="hero-slide" src="../images/nosotros-cft.png" alt="">
+        <img class="hero-slide is-active" src="../images/hardware-ensamblaje-optimized.jpg" width="1080" height="604" fetchpriority="high" decoding="async" alt="">
+        <img class="hero-slide" data-src="../images/desarrollo-software-optimized.jpg" width="1080" height="604" decoding="async" alt="">
+        <img class="hero-slide" data-src="../images/innovacion-consultoria.jpg" width="1280" height="698" decoding="async" alt="">
+        <img class="hero-slide" data-src="../images/nosotros-cft.png" width="768" height="768" decoding="async" alt="">
       </div>
       <div class="container">
         <div class="hero-inner">
@@ -117,7 +120,7 @@
 
         <div class="service-grid">
           <article class="service-card" data-reveal data-reveal-direction="left">
-            <img class="service-card-image service-card-image-top" src="../images/hardware-ensamblaje.png" alt="Espacio de ensamblaje CFT con una computadora de alto rendimiento y sus componentes">
+            <img class="service-card-image service-card-image-top" src="../images/hardware-ensamblaje-optimized.jpg" width="1080" height="604" loading="lazy" decoding="async" alt="Espacio de ensamblaje CFT con una computadora de alto rendimiento y sus componentes">
             <h3 data-reveal>Hardware &amp; ensamblaje</h3>
             <p data-reveal>Computadoras y equipos de alto rendimiento, configurados a la medida de tus proyectos, necesidades y presupuesto.</p>
             <button class="button button-outline service-card-action" id="openStoresModalBtn" type="button" aria-haspopup="dialog" aria-controls="storesModal">
@@ -126,7 +129,7 @@
           </article>
 
           <article class="service-card" data-reveal data-reveal-direction="left">
-            <img class="service-card-image service-card-image-top" src="../images/desarrollo-software.png" alt="Estación CFT de desarrollo de software con soluciones digitales a medida">
+            <img class="service-card-image service-card-image-top" src="../images/desarrollo-software-optimized.jpg" width="1080" height="604" loading="lazy" decoding="async" alt="Estación CFT de desarrollo de software con soluciones digitales a medida">
             <h3 data-reveal>Desarrollo de software</h3>
             <p data-reveal>Aplicaciones web y soluciones digitales funcionales, cuidadas en cada detalle y preparadas para crecer contigo.</p>
             <button class="button button-outline service-card-action" id="openModalBtn" type="button" aria-haspopup="dialog" aria-controls="optionsModal">
@@ -135,7 +138,7 @@
           </article>
 
           <article class="service-card" data-reveal data-reveal-direction="left">
-            <img class="service-card-image service-card-image-top" src="../images/innovacion-consultoria.jpg" alt="Asesoría de CFT sobre análisis de datos y soluciones tecnológicas">
+            <img class="service-card-image service-card-image-top" src="../images/innovacion-consultoria.jpg" width="1280" height="698" loading="lazy" decoding="async" alt="Asesoría de CFT sobre análisis de datos y soluciones tecnológicas">
             <h3 data-reveal>Innovación &amp; consultoría</h3>
             <p data-reveal>Orientación experta para optimizar tu infraestructura, tomar mejores decisiones y resolver retos técnicos complejos.</p>
             <button class="button button-outline service-card-action" id="openConsultingModalBtn" type="button" aria-haspopup="dialog" aria-controls="consultingModal">
@@ -165,7 +168,7 @@
     <section class="section section-muted" id="nosotros">
       <div class="container about-grid">
         <div class="about-emblem">
-          <img class="about-image" src="../images/nosotros-cft.png" alt="Ilustración de un cocodrilo tecnológico que representa la identidad de CFT">
+          <img class="about-image" src="../images/nosotros-cft.png" width="768" height="768" loading="lazy" decoding="async" alt="Ilustración de un cocodrilo tecnológico que representa la identidad de CFT">
         </div>
         <div class="about-copy">
           <span class="eyebrow" data-reveal>Nuestra esencia</span>
@@ -304,8 +307,8 @@
 
   <div class="splash-screen" id="cft-splash" role="status" aria-live="polite" hidden>
     <div class="splash-content">
-      <img class="splash-logo logo-light" src="../images/logo-cft-claro.jpeg" alt="CFT — Cuba Fashion Technologies">
-      <img class="splash-logo logo-dark" src="../images/logo-cft-oscuro.png" alt="">
+      <img class="splash-logo logo-light" src="../images/logo-cft-claro-optimized.jpg" width="160" height="160" alt="CFT — Cuba Fashion Technologies">
+      <img class="splash-logo logo-dark" src="../images/logo-cft-oscuro-optimized.jpg" width="160" height="160" alt="">
       <span class="splash-spinner" aria-hidden="true"></span>
       <p class="splash-message">Un momento, estamos redirigiendo…</p>
     </div>
@@ -323,7 +326,7 @@
           </svg>
         </button>
       </div>
-      <img class="software-modal-image" src="../images/desarrollo-software.png" alt="Estación CFT de desarrollo de software con soluciones digitales a medida">
+      <img class="software-modal-image" src="../images/desarrollo-software-optimized.jpg" width="1080" height="604" decoding="async" alt="Estación CFT de desarrollo de software con soluciones digitales a medida">
       <ul class="options-list">
         <li><button class="option-link" type="button" data-target="menu-digital">Menú digital interactivo</button></li>
         <li><button class="option-link" type="button" data-target="tienda-online">Tienda online</button></li>
@@ -346,7 +349,7 @@
           </svg>
         </button>
       </div>
-      <img class="stores-modal-image" src="../images/hardware-ensamblaje.png" alt="Computadora de alto rendimiento en el espacio de ensamblaje CFT">
+      <img class="stores-modal-image" src="../images/hardware-ensamblaje-optimized.jpg" width="1080" height="604" decoding="async" alt="Computadora de alto rendimiento en el espacio de ensamblaje CFT">
       <ul class="options-list">
         <li><button class="option-link" type="button" data-store-url="https://cubanfashioner-del.github.io/baterias-habana/">Baterías para laptops</button></li>
         <li><button class="option-link" type="button" data-store-url="https://detodo.si/index.html">Tienda detodo</button></li>
@@ -369,7 +372,7 @@
           </svg>
         </button>
       </div>
-      <img class="stores-modal-image" src="../images/innovacion-consultoria.jpg" alt="Asesoría de CFT sobre análisis de datos y soluciones tecnológicas">
+      <img class="stores-modal-image" src="../images/innovacion-consultoria.jpg" width="1280" height="698" decoding="async" alt="Asesoría de CFT sobre análisis de datos y soluciones tecnológicas">
       <ul class="options-list service-options">
         <li class="service-option">
           <strong>Auditoría de Hardware y Redes</strong>
