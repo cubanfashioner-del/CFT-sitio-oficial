@@ -8,7 +8,7 @@ supabase link --project-ref fzgkaolxngitwlatsusf
 supabase db push
 ```
 
-The migration creates the profile table, a case-insensitive unique username index, owner-only row-level security policies, and a trigger that creates a profile when an Auth user is registered. Existing Auth users receive generated usernames and can add their phone number from **Mi cuenta**.
+The migrations create the profile table, a case-insensitive unique username index, owner-only row-level security policies, and a trigger that creates a profile when an Auth user is registered. Registration does not require a username or phone number: Supabase generates an internal username when one is omitted, and the phone number remains empty until the user adds it from **Mi cuenta**.
 
 ## Secure account deletion
 

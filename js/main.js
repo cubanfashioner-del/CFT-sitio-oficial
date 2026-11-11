@@ -629,7 +629,7 @@
 
         const user = currentAccountSession.user;
         const username = accountProfileUsername.value.trim().toLowerCase();
-        const phone = accountProfilePhone.value.trim();
+        const phone = accountProfilePhone.value.trim() || null;
         const email = accountProfileEmail.value.trim();
         let profileSaved = false;
         accountProfileSubmit.disabled = true;
@@ -646,7 +646,7 @@
           if (error) throw error;
 
           accountProfileUsername.value = data.username;
-          accountProfilePhone.value = data.phone;
+          accountProfilePhone.value = data.phone || "";
           profileSaved = true;
 
           if (email.toLowerCase() !== (user.new_email || user.email || "").toLowerCase()) {

@@ -478,6 +478,13 @@
       max-width: 790px;
     }
 
+    .hero .eyebrow,
+    .hero h1,
+    .hero-copy,
+    .hero-note {
+      text-shadow: 0 2px 5px rgba(0, 0, 0, .9), 0 0 18px rgba(0, 0, 0, .65);
+    }
+
     .eyebrow {
       display: inline-flex;
       align-items: center;
