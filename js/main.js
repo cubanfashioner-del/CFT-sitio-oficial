@@ -511,18 +511,18 @@
         if (event.key === "Escape") closeOptionsModal();
       });
       optionsModal.querySelectorAll(".option-link").forEach((optionButton) => {
-        optionButton.addEventListener("click", async () => {
+        optionButton.addEventListener("click", () => {
           const target = optionButton.dataset.target;
           switch (target) {
             case "menu-digital":
+              window.location.assign("https://cubanfashioner-del.github.io/plantilla-restaurant/");
+              break;
             case "tienda-online":
             case "landing-page":
             case "portafolio":
             case "corporativo":
-              await runWhenAuthenticated(() => {
-                window.alert(`Opción seleccionada: ${target}`);
-                closeOptionsModal();
-              });
+              window.alert(`Opción seleccionada: ${target}`);
+              closeOptionsModal();
               break;
             default:
               console.error("La opción seleccionada no tiene un destino válido.", target);
@@ -551,14 +551,14 @@
         if (event.key === "Escape") closeStoresModal();
       });
       storesModal.querySelectorAll("button.option-link[data-store-url]").forEach((storeButton) => {
-        storeButton.addEventListener("click", async () => {
-          await runWhenAuthenticated(() => window.location.assign(storeButton.dataset.storeUrl));
+        storeButton.addEventListener("click", () => {
+          window.location.assign(storeButton.dataset.storeUrl);
         });
       });
 
-      document.querySelector("#whatsapp-contact-button").addEventListener("click", async (event) => {
+      document.querySelector("#whatsapp-contact-button").addEventListener("click", (event) => {
         const whatsappButton = event.currentTarget;
-        await runWhenAuthenticated(() => window.location.assign(whatsappButton.dataset.whatsappUrl));
+        window.location.assign(whatsappButton.dataset.whatsappUrl);
       });
 
       const closeConsultingModal = () => {
