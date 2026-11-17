@@ -14,6 +14,10 @@
       const openConsultingModalButton = document.querySelector("#openConsultingModalBtn");
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
       const heroSlides = document.querySelectorAll(".hero-slide");
+      const heroServiceCarousel = document.querySelector(".hero-service-carousel");
+      const heroServiceViewport = document.querySelector(".hero-service-slides");
+      const heroServiceSlides = document.querySelectorAll(".hero-service-slide");
+      const heroServiceDots = document.querySelectorAll(".hero-service-dot");
       const revealElements = document.querySelectorAll("[data-reveal]");
       const newsSection = document.querySelector("#seccion-noticias");
       const newsModal = document.querySelector("#news-modal");
@@ -55,38 +59,162 @@
       const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6Z2thb2x4bmdpdHdsYXRzdXNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2OTE5MDAsImV4cCI6MjEwODI2NzkwMH0.l_l4MV9Scu7PTZLztGam8DP7HGRCh93fCosA4R3m5P4";
 
       let activeHeroSlide = 0;
-      if (heroSlides.length > 1) {
-        const showNextHeroSlide = () => {
-          const nextIndex = (activeHeroSlide + 1) % heroSlides.length;
-          const previousSlide = heroSlides[activeHeroSlide];
-          const nextSlide = heroSlides[nextIndex];
-          const activateNextSlide = () => {
-            activeHeroSlide = nextIndex;
-            previousSlide.classList.remove("is-active");
-            previousSlide.classList.add("is-leaving");
-            nextSlide.classList.remove("is-leaving");
-            nextSlide.classList.add("is-active");
+      let heroAutoplayTimer = null;
+      let heroPointerId = null;
+      let heroPointerStartX = 0;
+      let heroPointerStartY = 0;
+      let heroPointerDeltaX = 0;
+      let heroIsDragging = false;
+      let heroSuppressClickUntil = 0;
+      const heroAutoplayDelay = 7500;
 
-            window.setTimeout(() => previousSlide.classList.remove("is-leaving"), 1000);
-          };
+      const positionHeroSlides = (dragOffset = 0) => {
+        const slideGap = Number.parseFloat(
+          window.getComputedStyle(heroServiceViewport).getPropertyValue("--hero-slide-gap")
+        ) || 16;
 
-          if (nextSlide.dataset.src) {
-            const imageUrl = nextSlide.dataset.src;
-            nextSlide.addEventListener("load", () => {
-              delete nextSlide.dataset.src;
-              activateNextSlide();
-            }, { once: true });
-            nextSlide.addEventListener("error", () => {
-              console.error(`No se pudo cargar la imagen del carrusel: ${imageUrl}`);
-            }, { once: true });
-            nextSlide.src = imageUrl;
+        heroServiceSlides.forEach((slide, index) => {
+          let offset = index - activeHeroSlide;
+          if (offset > heroServiceSlides.length / 2) offset -= heroServiceSlides.length;
+          if (offset < -heroServiceSlides.length / 2) offset += heroServiceSlides.length;
+
+          const isActive = offset === 0;
+          slide.classList.toggle("is-active", isActive);
+          slide.classList.toggle("is-nearby", Math.abs(offset) === 1);
+          slide.style.transform = `translateX(calc(${offset * 100}% + ${offset * slideGap + dragOffset}px))`;
+          slide.setAttribute("aria-hidden", String(!isActive));
+          slide.tabIndex = isActive ? 0 : -1;
+        });
+      };
+
+      const setHeroSlide = (index) => {
+        if (index < 0 || index >= heroSlides.length || index >= heroServiceSlides.length) return;
+
+        activeHeroSlide = index;
+        heroSlides.forEach((slide, slideIndex) => {
+          slide.classList.toggle("is-active", slideIndex === index);
+        });
+        positionHeroSlides();
+        heroServiceDots.forEach((dot, dotIndex) => {
+          const isActive = dotIndex === index;
+          dot.classList.toggle("is-active", isActive);
+          dot.setAttribute("aria-current", String(isActive));
+        });
+      };
+
+      const stopHeroAutoplay = () => {
+        if (heroAutoplayTimer !== null) {
+          window.clearInterval(heroAutoplayTimer);
+          heroAutoplayTimer = null;
+        }
+      };
+
+      const startHeroAutoplay = () => {
+        stopHeroAutoplay();
+        if (
+          reducedMotion.matches
+          || heroSlides.length < 2
+          || heroServiceCarousel.matches(":hover")
+          || heroServiceCarousel.contains(document.activeElement)
+        ) return;
+
+        heroAutoplayTimer = window.setInterval(() => {
+          setHeroSlide((activeHeroSlide + 1) % heroSlides.length);
+        }, heroAutoplayDelay);
+      };
+
+      if (heroServiceCarousel && heroSlides.length > 1) {
+        setHeroSlide(0);
+        startHeroAutoplay();
+
+        heroServiceCarousel.addEventListener("pointerenter", stopHeroAutoplay);
+        heroServiceCarousel.addEventListener("pointerleave", startHeroAutoplay);
+        heroServiceCarousel.addEventListener("focusin", stopHeroAutoplay);
+        heroServiceCarousel.addEventListener("focusout", (event) => {
+          if (!heroServiceCarousel.contains(event.relatedTarget)) startHeroAutoplay();
+        });
+
+        heroServiceSlides.forEach((slide) => {
+          slide.addEventListener("click", () => {
+            if (Date.now() < heroSuppressClickUntil) return;
+            const slideIndex = [...heroServiceSlides].indexOf(slide);
+            if (slideIndex !== activeHeroSlide) {
+              setHeroSlide(slideIndex);
+              startHeroAutoplay();
+              return;
+            }
+
+            const trigger = document.getElementById(slide.dataset.openTrigger);
+            if (!(trigger instanceof HTMLButtonElement)) {
+              console.error("No se encontró el botón para abrir el modal del servicio.", slide.dataset.openTrigger);
+              return;
+            }
+            trigger.click();
+          });
+        });
+
+        heroServiceDots.forEach((dot, index) => {
+          dot.addEventListener("click", () => {
+            setHeroSlide(index);
+            startHeroAutoplay();
+          });
+        });
+
+        heroServiceViewport.addEventListener("pointerdown", (event) => {
+          if (event.pointerType === "mouse" && event.button !== 0) return;
+          stopHeroAutoplay();
+          heroPointerId = event.pointerId;
+          heroPointerStartX = event.clientX;
+          heroPointerStartY = event.clientY;
+          heroPointerDeltaX = 0;
+          heroIsDragging = false;
+        });
+
+        heroServiceViewport.addEventListener("pointermove", (event) => {
+          if (event.pointerId !== heroPointerId) return;
+
+          const deltaX = event.clientX - heroPointerStartX;
+          const deltaY = event.clientY - heroPointerStartY;
+          if (!heroIsDragging && Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 10) {
+            heroPointerId = null;
             return;
           }
+          if (!heroIsDragging && Math.abs(deltaX) > 8) {
+            heroIsDragging = true;
+            heroServiceViewport.classList.add("is-dragging");
+            heroServiceViewport.setPointerCapture(event.pointerId);
+          }
+          if (!heroIsDragging) return;
 
-          activateNextSlide();
+          event.preventDefault();
+          heroPointerDeltaX = deltaX;
+          positionHeroSlides(deltaX);
+        });
+
+        const finishHeroPointer = (event) => {
+          if (event.pointerId !== heroPointerId) return;
+
+          const wasDragging = heroIsDragging;
+          const threshold = Math.max(42, heroServiceViewport.clientWidth * .12);
+          heroPointerId = null;
+          heroIsDragging = false;
+          heroServiceViewport.classList.remove("is-dragging");
+
+          if (wasDragging && Math.abs(heroPointerDeltaX) >= threshold) {
+            const direction = heroPointerDeltaX < 0 ? 1 : -1;
+            const nextIndex = (activeHeroSlide + direction + heroSlides.length) % heroSlides.length;
+            heroSuppressClickUntil = Date.now() + 400;
+            setHeroSlide(nextIndex);
+          } else {
+            positionHeroSlides();
+          }
+
+          heroPointerDeltaX = 0;
+          startHeroAutoplay();
         };
 
-        window.setInterval(showNextHeroSlide, 5000);
+        heroServiceViewport.addEventListener("pointerup", finishHeroPointer);
+        heroServiceViewport.addEventListener("pointercancel", finishHeroPointer);
       }
 
       const prepareRevealWords = (element) => {
@@ -159,7 +287,7 @@
             throw new TypeError("El archivo de noticias debe contener un arreglo JSON.");
           }
 
-          const articles = news.filter((item) => (
+          const validArticles = news.filter((item) => (
             item &&
             Object.keys(item).length === 7 &&
             typeof item.id === "string" &&
@@ -171,6 +299,18 @@
             typeof item.imagen === "string" &&
             (!item.imagen || toSafeImageUrl(item.imagen))
           ));
+          const seenTitles = new Set();
+          const articles = validArticles.filter((item) => {
+            const title = item.titulo
+              .normalize("NFKD")
+              .replace(/\p{M}/gu, "")
+              .toLocaleLowerCase("es")
+              .replace(/[^\p{L}\p{N}]+/gu, " ")
+              .trim();
+            if (!title || seenTitles.has(title)) return false;
+            seenTitles.add(title);
+            return true;
+          });
           newsSection.replaceChildren();
 
           if (articles.length === 0) {

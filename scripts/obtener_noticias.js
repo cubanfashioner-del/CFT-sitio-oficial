@@ -29,18 +29,22 @@ const feeds = [
   {
     url: "https://feeds.arstechnica.com/arstechnica/index",
     source: "Ars Technica",
+    language: "en",
   },
   {
-    url: "https://techcrunch.com/feed/",
-    source: "TechCrunch",
+    url: "https://elchapuzasinformatico.com/feed/",
+    source: "El Chapuzas Informático",
+    language: "es",
   },
   {
-    url: "https://www.theverge.com/rss/index.xml",
-    source: "The Verge",
+    url: "https://www.xataka.com/rss2.xml",
+    source: "Xataka",
+    language: "es",
   },
   {
-    url: "https://www.wired.com/feed/rss",
-    source: "WIRED",
+    url: "https://hardzone.es/feed/",
+    source: "Hard Zone",
+    language: "es",
   },
 ];
 
@@ -238,8 +242,63 @@ function createArticleId(source, title, timestamp) {
     .slice(0, 20);
 }
 
-async function fetchFeed(feedUrl) {
-  const response = await fetch(feedUrl, {
+function normalizeArticleTitle(title) {
+  return cleanText(title)
+    .normalize("NFKD")
+    .replace(/\p{M}/gu, "")
+    .toLocaleLowerCase("es")
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim();
+}
+
+function normalizeArticleLink(value, baseUrl) {
+  try {
+    const url = new URL(decodeEntities(String(value || "")).trim(), baseUrl);
+    if (url.protocol !== "https:" && url.protocol !== "http:") return "";
+
+    url.hash = "";
+    for (const key of [...url.searchParams.keys()]) {
+      if (/^(utm_.+|fbclid|gclid|mc_cid|mc_eid)$/i.test(key)) {
+        url.searchParams.delete(key);
+      }
+    }
+    url.searchParams.sort();
+    url.pathname = url.pathname.replace(/\/+$/, "") || "/";
+    return url.href;
+  } catch {
+    return "";
+  }
+}
+
+function removeDuplicateArticles(articles) {
+  const seenTitles = new Set();
+  const seenLinks = new Set();
+
+  return [...articles]
+    .sort((first, second) => second.timestamp - first.timestamp)
+    .filter((article) => {
+      const title = normalizeArticleTitle(article.titulo);
+      const link = article.link;
+      if ((title && seenTitles.has(title)) || (link && seenLinks.has(link))) return false;
+
+      if (title) seenTitles.add(title);
+      if (link) seenLinks.add(link);
+      return true;
+    });
+}
+
+function limitArticlesPerFeed(articles) {
+  const counts = new Map();
+  return articles.filter((article) => {
+    const count = counts.get(article.fuente) || 0;
+    if (count >= ARTICLES_PER_FEED) return false;
+    counts.set(article.fuente, count + 1);
+    return true;
+  });
+}
+
+async function requestFeed(url) {
+  const response = await fetch(url, {
     headers: {
       Accept: "application/rss+xml, application/atom+xml, application/xml, text/xml",
       "User-Agent": "CFTNewsAggregator/1.0",
@@ -251,7 +310,29 @@ async function fetchFeed(feedUrl) {
     throw new Error(`El feed respondió con HTTP ${response.status}.`);
   }
 
-  return parser.parseString(await response.text());
+  const parsedFeed = await parser.parseString(await response.text());
+  if (!Array.isArray(parsedFeed.items) || parsedFeed.items.length === 0) {
+    throw new Error("La respuesta no contiene entradas RSS válidas.");
+  }
+  return parsedFeed;
+}
+
+async function fetchFeed(feedUrl) {
+  try {
+    return await requestFeed(feedUrl);
+  } catch (directError) {
+    const proxyUrl = new URL("https://api.allorigins.win/raw");
+    proxyUrl.searchParams.set("url", feedUrl);
+
+    try {
+      return await requestFeed(proxyUrl.href);
+    } catch (proxyError) {
+      throw new Error(
+        `Falló la descarga directa (${directError.message}) y también el proxy AllOrigins (${proxyError.message}).`,
+        { cause: proxyError }
+      );
+    }
+  }
 }
 
 async function getLatestFromFeed(feed) {
@@ -282,12 +363,13 @@ async function getLatestFromFeed(feed) {
         fuente: feed.source,
         fecha: getReadableDate(timestamp),
         imagen: image,
+        link: normalizeArticleLink(item.link, feed.url),
+        language: feed.language,
         timestamp,
       };
     })
     .filter(Boolean)
-    .sort((first, second) => second.timestamp - first.timestamp)
-    .slice(0, ARTICLES_PER_FEED);
+    .sort((first, second) => second.timestamp - first.timestamp);
 }
 
 function splitForTranslation(text) {
@@ -350,9 +432,14 @@ async function translateParagraphs(paragraphs) {
 }
 
 async function translateArticle(article) {
-  const titulo = await translateRequired(article.titulo);
-  const resumen = await translateRequired(article.resumen);
-  const contenido = await translateParagraphs(article.contentParagraphs);
+  const translate = article.language === "es"
+    ? async (text) => text
+    : translateRequired;
+  const titulo = await translate(article.titulo);
+  const resumen = await translate(article.resumen);
+  const contenido = article.language === "es"
+    ? article.contentParagraphs.join("\n\n")
+    : await translateParagraphs(article.contentParagraphs);
 
   const translatedArticle = {
     id: article.id,
@@ -429,11 +516,11 @@ async function main() {
   });
 
   if (!articles.length) {
-    console.warn("Ningún feed proporcionó noticias completas con imagen; se publicará una lista vacía.");
+    console.warn("Ningún feed proporcionó noticias completas con imagen; se conserva data/noticias.json.");
+    return;
   }
 
-  const uniqueArticles = [...new Map(articles.map((article) => [article.id, article])).values()]
-    .sort((first, second) => second.timestamp - first.timestamp);
+  const uniqueArticles = limitArticlesPerFeed(removeDuplicateArticles(articles));
   const news = [];
   for (const article of uniqueArticles) {
     try {
@@ -441,6 +528,11 @@ async function main() {
     } catch (error) {
       console.warn(`Se descarta "${article.titulo}": ${error.message}`);
     }
+  }
+
+  if (!news.length) {
+    console.warn("Ninguna noticia superó la validación final; se conserva data/noticias.json.");
+    return;
   }
 
   if (!news.every(hasExpectedFields)) {
