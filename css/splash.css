@@ -1,13 +1,4 @@
 :root {
-  color-scheme: light;
-  --splash-background: #f8f9fa;
-  --splash-text: #17211d;
-  --splash-muted: #64716b;
-  --splash-accent: #1b4332;
-  --splash-track: rgba(27, 67, 50, .14);
-}
-
-:root[data-theme="dark"] {
   color-scheme: dark;
   --splash-background: #0b0f0e;
   --splash-text: #edf2ef;
@@ -61,18 +52,6 @@ body.splash-page {
   border-radius: 20px;
   object-fit: cover;
   box-shadow: 0 12px 40px rgba(0, 0, 0, .1);
-}
-
-.splash-logo.logo-dark {
-  display: none;
-}
-
-:root[data-theme="dark"] .splash-logo.logo-light {
-  display: none;
-}
-
-:root[data-theme="dark"] .splash-logo.logo-dark {
-  display: block;
 }
 
 .splash-message {

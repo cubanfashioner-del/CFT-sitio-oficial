@@ -2,9 +2,6 @@
       const menuButton = document.querySelector(".menu-toggle");
       const navigation = document.querySelector("#main-navigation");
       const year = document.querySelector("#current-year");
-      const themeButton = document.querySelector(".theme-toggle");
-      const themeLabel = themeButton.querySelector(".theme-toggle-label");
-      const themeColor = document.querySelector('meta[name="theme-color"]');
       const modalTriggers = document.querySelectorAll("[data-modal]");
       const optionsModal = document.querySelector("#optionsModal");
       const openModalButton = document.querySelector("#openModalBtn");
@@ -13,6 +10,7 @@
       const consultingModal = document.querySelector("#consultingModal");
       const openConsultingModalButton = document.querySelector("#openConsultingModalBtn");
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
       const heroSlides = document.querySelectorAll(".hero-slide");
       const heroServiceCarousel = document.querySelector(".hero-service-carousel");
       const heroServiceViewport = document.querySelector(".hero-service-slides");
@@ -24,6 +22,58 @@
       const newsModalTitle = document.querySelector("#news-modal-title");
       const newsModalBody = document.querySelector("#news-modal-body");
       const newsModalSource = document.querySelector("#news-modal-source");
+      const aboutEmblem = document.querySelector(".about-emblem");
+      const aboutImage = aboutEmblem?.querySelector(".about-image");
+
+      if (aboutEmblem && aboutImage) {
+        let isAboutPressed = false;
+
+        const moveAboutImage = (event) => {
+          if (reducedMotion.matches) return;
+          if (event.pointerType === "touch" && !isAboutPressed) return;
+
+          const bounds = aboutEmblem.getBoundingClientRect();
+          const horizontal = Math.max(-1, Math.min(1, (event.clientX - bounds.left) / bounds.width * 2 - 1));
+          const vertical = Math.max(-1, Math.min(1, (event.clientY - bounds.top) / bounds.height * 2 - 1));
+          const intensity = isAboutPressed ? 1.5 : 1;
+
+          aboutImage.style.setProperty("--about-shift-x", `${horizontal * 8 * intensity}px`);
+          aboutImage.style.setProperty("--about-shift-y", `${vertical * 8 * intensity}px`);
+          aboutImage.style.setProperty("--about-tilt-x", `${vertical * -7 * intensity}deg`);
+          aboutImage.style.setProperty("--about-tilt-y", `${horizontal * 9 * intensity}deg`);
+        };
+
+        const resetAboutImage = () => {
+          isAboutPressed = false;
+          aboutEmblem.classList.remove("is-pressed");
+          aboutImage.style.removeProperty("--about-shift-x");
+          aboutImage.style.removeProperty("--about-shift-y");
+          aboutImage.style.removeProperty("--about-tilt-x");
+          aboutImage.style.removeProperty("--about-tilt-y");
+          aboutImage.style.removeProperty("--about-scale");
+        };
+
+        aboutEmblem.addEventListener("pointermove", moveAboutImage);
+        aboutEmblem.addEventListener("pointerdown", (event) => {
+          if (event.pointerType === "mouse" && event.button !== 0) return;
+          isAboutPressed = true;
+          aboutEmblem.classList.add("is-pressed");
+          aboutImage.style.setProperty("--about-scale", "1.035");
+          moveAboutImage(event);
+        });
+        aboutEmblem.addEventListener("pointerup", (event) => {
+          if (event.pointerType === "touch") resetAboutImage();
+          else {
+            isAboutPressed = false;
+            aboutEmblem.classList.remove("is-pressed");
+            aboutImage.style.removeProperty("--about-scale");
+            moveAboutImage(event);
+          }
+        });
+        aboutEmblem.addEventListener("pointercancel", resetAboutImage);
+        aboutEmblem.addEventListener("pointerleave", resetAboutImage);
+      }
+
       const uiHistoryKey = "cftUi";
       const emailConfirmationParam = "cft_email_confirmation";
       const emailConfirmationRedirect = new URLSearchParams(window.location.search).get(emailConfirmationParam) === "1";
@@ -66,7 +116,7 @@
       let heroPointerDeltaX = 0;
       let heroIsDragging = false;
       let heroSuppressClickUntil = 0;
-      const heroAutoplayDelay = 7500;
+      const heroAutoplayDelay = 5000;
 
       const positionHeroSlides = (dragOffset = 0) => {
         const slideGap = Number.parseFloat(
@@ -138,11 +188,7 @@
           slide.addEventListener("click", () => {
             if (Date.now() < heroSuppressClickUntil) return;
             const slideIndex = [...heroServiceSlides].indexOf(slide);
-            if (slideIndex !== activeHeroSlide) {
-              setHeroSlide(slideIndex);
-              startHeroAutoplay();
-              return;
-            }
+            if (slideIndex !== activeHeroSlide) setHeroSlide(slideIndex);
 
             const trigger = document.getElementById(slide.dataset.openTrigger);
             if (!(trigger instanceof HTMLButtonElement)) {
@@ -425,30 +471,6 @@
       if (newsSection) loadNews();
 
       year.textContent = String(new Date().getFullYear());
-
-      const setTheme = (theme, savePreference = false) => {
-        const isDark = theme === "dark";
-        document.documentElement.dataset.theme = theme;
-        themeButton.setAttribute("aria-pressed", String(isDark));
-        themeButton.setAttribute("aria-label", `Cambiar a modo ${isDark ? "claro" : "oscuro"}`);
-        themeButton.title = `Cambiar a modo ${isDark ? "claro" : "oscuro"}`;
-        themeLabel.textContent = isDark ? "Claro" : "Oscuro";
-        themeColor.content = isDark ? "#0b0f0e" : "#f8f9fa";
-
-        if (savePreference) {
-          try {
-            localStorage.setItem("cft-theme", theme);
-          } catch (error) {
-            console.warn("No se pudo guardar la preferencia de tema.", error);
-          }
-        }
-      };
-
-      setTheme(document.documentElement.dataset.theme === "light" ? "light" : "dark");
-      themeButton.addEventListener("click", () => {
-        const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-        setTheme(nextTheme, true);
-      });
 
       const getUiHistoryState = () => (
         history.state && typeof history.state === "object" ? history.state : {}

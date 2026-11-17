@@ -3,26 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f8f9fa">
+  <meta name="theme-color" content="#0b0f0e">
   <link rel="icon" href="favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png" media="(prefers-color-scheme: light)">
-  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png" media="(prefers-color-scheme: light)">
-  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16-dark.png" media="(prefers-color-scheme: dark)">
-  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32-dark.png" media="(prefers-color-scheme: dark)">
-  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16-dark.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32-dark.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon-dark.png">
   <link rel="manifest" href="site.webmanifest">
   <title>CFT — Cuba Fashion Technologies</title>
   <script>
-    document.documentElement.dataset.theme = "light";
-    try {
-      const savedTheme = localStorage.getItem("cft-theme") || localStorage.getItem("cuban-fashioner-tech-theme");
-      if (savedTheme === "light" || savedTheme === "dark") {
-        document.documentElement.dataset.theme = savedTheme;
-      }
-    } catch (error) {
-      console.warn("No se pudo leer la preferencia de tema.", error);
-    }
+    document.documentElement.dataset.theme = "dark";
   </script>
   <link rel="stylesheet" href="css/splash.css">
   <script src="js/splash.js" defer></script>
@@ -30,8 +19,7 @@
 <body class="splash-page" data-splash-redirect="html/index.html">
   <main class="splash-screen" id="cft-splash" role="status" aria-live="polite">
     <div class="splash-content">
-      <img class="splash-logo logo-light" src="images/logo-cft-claro-optimized.jpg" width="160" height="160" alt="CFT — Cuba Fashion Technologies">
-      <img class="splash-logo logo-dark" src="images/logo-cft-oscuro-optimized.jpg" width="160" height="160" alt="">
+      <img class="splash-logo logo-dark" src="images/logo-cft-oscuro-optimized.jpg" width="160" height="160" alt="CFT — Cuba Fashion Technologies">
       <span class="splash-spinner" aria-hidden="true"></span>
       <p class="splash-message">Abriendo el portal CFT…</p>
       <a href="html/index.html" data-splash-link>Continuar al sitio</a>
