@@ -1106,6 +1106,105 @@
       color: var(--accent);
     }
 
+    body.email-verification-open {
+      overflow: hidden;
+    }
+
+    .email-verification-overlay {
+      position: fixed;
+      z-index: 10000;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(5, 9, 8, .94);
+      color: var(--text-main);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .email-verification-overlay[hidden],
+    .email-verification-reload[hidden] {
+      display: none;
+    }
+
+    .email-verification-card {
+      display: grid;
+      width: min(460px, 100%);
+      justify-items: center;
+      gap: 18px;
+      padding: clamp(28px, 7vw, 48px);
+      border: 1px solid var(--accent-border-strong);
+      border-radius: 24px;
+      background:
+        radial-gradient(ellipse at 50% 0, var(--accent-glow-strong), transparent 68%),
+        var(--surface);
+      box-shadow: 0 28px 90px rgba(0, 0, 0, .45);
+      text-align: center;
+    }
+
+    .email-verification-logo {
+      width: 76px;
+      height: 76px;
+      border: 1px solid var(--accent-border);
+      border-radius: 20px;
+      object-fit: cover;
+    }
+
+    .email-verification-spinner {
+      width: 34px;
+      height: 34px;
+      border: 3px solid var(--accent-soft);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: email-verification-spin .8s linear infinite;
+    }
+
+    .email-verification-spinner[hidden] {
+      display: none;
+    }
+
+    @keyframes email-verification-spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .email-verification-title {
+      margin: 0;
+      font-size: clamp(1.45rem, 5vw, 1.9rem);
+      line-height: 1.2;
+    }
+
+    .email-verification-copy {
+      margin: 0;
+      color: var(--modal-copy);
+      font-size: .94rem;
+      line-height: 1.75;
+    }
+
+    .email-verification-overlay[data-state="error"] .email-verification-title {
+      color: #ff9a8b;
+    }
+
+    .email-verification-reload {
+      min-height: 46px;
+      margin-top: 6px;
+      padding: 0 22px;
+      border: 1px solid var(--accent-border-strong);
+      border-radius: 999px;
+      background: var(--accent);
+      color: var(--button-text);
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color .2s ease, transform .2s ease;
+    }
+
+    .email-verification-reload:hover {
+      transform: translateY(-1px);
+      background: var(--button-hover);
+    }
+
     .modal {
       width: min(620px, calc(100% - 32px));
       max-height: min(82vh, 760px);
@@ -1779,6 +1878,10 @@
       .about-emblem img {
         animation: none;
         transition: none;
+      }
+
+      .email-verification-spinner {
+        animation-duration: 1.8s;
       }
 
       .hero-service-slide,

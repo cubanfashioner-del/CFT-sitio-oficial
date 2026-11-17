@@ -10,6 +10,93 @@
       const consultingModal = document.querySelector("#consultingModal");
       const openConsultingModalButton = document.querySelector("#openConsultingModalBtn");
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const emailConfirmationParam = "cft_email_confirmation";
+      const callbackSearch = new URLSearchParams(window.location.search);
+      const callbackHash = new URLSearchParams(window.location.hash.slice(1));
+      const callbackType = callbackSearch.get("type") || callbackHash.get("type");
+      const isSupabaseEmailCallback = callbackSearch.has("code")
+        || ["signup", "email_change"].includes(callbackType)
+        || (
+          (callbackSearch.has("access_token") || callbackHash.has("access_token"))
+          && ["signup", "email_change"].includes(callbackType)
+        )
+        || (
+          (callbackSearch.has("token_hash") || callbackHash.has("token_hash"))
+          && ["signup", "email", "email_change"].includes(callbackType)
+        );
+      const emailConfirmationRedirect = isSupabaseEmailCallback
+        || callbackSearch.get(emailConfirmationParam) === "1";
+      const verificationOverlay = document.querySelector("#email-verification-overlay");
+      const verificationSpinner = document.querySelector("#email-verification-spinner");
+      const verificationTitle = document.querySelector("#email-verification-title");
+      const verificationCopy = document.querySelector("#email-verification-copy");
+      const verificationReload = document.querySelector("#email-verification-reload");
+      const verificationMinimumDelay = emailConfirmationRedirect
+        ? new Promise((resolve) => {
+          const beginVerificationScreen = () => {
+            verificationOverlay.hidden = false;
+            document.body.classList.add("email-verification-open");
+            document.body.setAttribute("aria-busy", "true");
+            verificationTitle.focus();
+            window.setTimeout(resolve, 2500);
+          };
+
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", beginVerificationScreen, { once: true });
+          } else {
+            beginVerificationScreen();
+          }
+        })
+        : Promise.resolve();
+
+      const showVerificationResult = (success) => {
+        verificationOverlay.dataset.state = success ? "success" : "error";
+        verificationSpinner.hidden = true;
+        verificationTitle.textContent = success
+          ? "¡Correo verificado con éxito!"
+          : "No se pudo verificar el correo";
+        verificationCopy.textContent = success
+          ? "Tu perfil ya está actualizado. Cierra esta ventana, vuelve a abrir tu navegador e inicia sesión en CFT con tu correo y contraseña."
+          : "No se pudo confirmar la actualización del correo. Solicita un nuevo enlace de verificación e inténtalo otra vez.";
+        verificationReload.hidden = false;
+        verificationReload.focus();
+        document.body.removeAttribute("aria-busy");
+      };
+
+      const cleanVerificationUrl = () => {
+        const cleanUrl = new URL(window.location.href);
+        [
+          "access_token",
+          "refresh_token",
+          "expires_at",
+          "expires_in",
+          "token_type",
+          "code",
+          "token_hash",
+          "type",
+          "error",
+          "error_code",
+          "error_description",
+          "provider_token",
+          "provider_refresh_token",
+          emailConfirmationParam
+        ].forEach((key) => cleanUrl.searchParams.delete(key));
+        cleanUrl.hash = "";
+        window.history.replaceState(null, "", cleanUrl);
+      };
+
+      verificationReload.addEventListener("click", () => {
+        try {
+          localStorage.clear();
+          sessionStorage.clear();
+        } catch (error) {
+          console.error("No se pudo limpiar el almacenamiento del navegador:", error);
+          verificationCopy.textContent = "No se pudo limpiar el almacenamiento. Revisa la configuración del navegador e inténtalo de nuevo.";
+          return;
+        }
+
+        window.location.reload();
+      });
 
       const heroSlides = document.querySelectorAll(".hero-slide");
       const heroServiceCarousel = document.querySelector(".hero-service-carousel");
@@ -75,8 +162,6 @@
       }
 
       const uiHistoryKey = "cftUi";
-      const emailConfirmationParam = "cft_email_confirmation";
-      const emailConfirmationRedirect = new URLSearchParams(window.location.search).get(emailConfirmationParam) === "1";
       const accountLink = document.querySelector("#nav-account-link");
       const accountLabel = document.querySelector("#nav-account-label");
       const logoutButton = document.querySelector("#nav-logout");
@@ -997,8 +1082,9 @@
           const callbackFragment = new URLSearchParams(window.location.hash.slice(1));
           const tokenHash = callbackQuery.get("token_hash") || callbackFragment.get("token_hash");
           const verificationType = callbackQuery.get("type") || callbackFragment.get("type");
+          let verificationSucceeded = false;
           if (tokenHash) {
-            if (verificationType !== "signup" && verificationType !== "email") {
+            if (!["signup", "email", "email_change"].includes(verificationType)) {
               throw new Error("El enlace de verificación tiene un tipo no admitido.");
             }
             const { error: verificationError } = await supabase.auth.verifyOtp({
@@ -1006,15 +1092,7 @@
               type: verificationType
             });
             if (verificationError) throw verificationError;
-
-            const cleanUrl = new URL(window.location.href);
-            cleanUrl.searchParams.delete("token_hash");
-            cleanUrl.searchParams.delete("type");
-            const cleanFragment = new URLSearchParams(cleanUrl.hash.slice(1));
-            cleanFragment.delete("token_hash");
-            cleanFragment.delete("type");
-            cleanUrl.hash = cleanFragment.toString();
-            window.history.replaceState(null, "", cleanUrl);
+            verificationSucceeded = true;
           }
           const { data, error } = await supabase.auth.getSession();
           if (error) throw error;
@@ -1024,17 +1102,17 @@
             if (userError) throw userError;
             session = { ...session, user: userData.user };
           }
-          setAccountSession(session);
           if (emailConfirmationRedirect) {
-            authStatus.dataset.state = session?.user.email_confirmed_at ? "success" : "error";
-            authStatus.textContent = session?.user.email_confirmed_at
-              ? "¡Correo verificado con éxito! Tu sesión está iniciada."
-              : "No se pudo validar el correo. Solicita un nuevo enlace de verificación.";
-            authStatus.hidden = false;
-
-            const cleanUrl = new URL(window.location.href);
-            cleanUrl.searchParams.delete(emailConfirmationParam);
-            window.history.replaceState(null, "", cleanUrl);
+            verificationSucceeded = verificationSucceeded || Boolean(session?.user.email_confirmed_at);
+            const { error: signOutError } = await supabase.auth.signOut();
+            if (signOutError) throw signOutError;
+            cleanVerificationUrl();
+            session = null;
+            setAccountSession(null);
+            await verificationMinimumDelay;
+            showVerificationResult(verificationSucceeded);
+          } else {
+            setAccountSession(session);
           }
           if (session) await loadAccountProfile(session.user);
           supabase.auth.onAuthStateChange((_event, session) => setAccountSession(session));
@@ -1058,9 +1136,23 @@
           });
         } catch (error) {
           console.error("No se pudo comprobar la sesión de Supabase:", error);
-          authStatus.dataset.state = "error";
-          authStatus.textContent = "No se pudo comprobar el estado de la sesión.";
-          authStatus.hidden = false;
+          if (emailConfirmationRedirect) {
+            if (supabaseClient) {
+              try {
+                const { error: signOutError } = await supabaseClient.auth.signOut();
+                if (signOutError) throw signOutError;
+              } catch (signOutError) {
+                console.error("No se pudo cerrar la sesión después de verificar el correo:", signOutError);
+              }
+            }
+            cleanVerificationUrl();
+            await verificationMinimumDelay;
+            showVerificationResult(false);
+          } else {
+            authStatus.dataset.state = "error";
+            authStatus.textContent = "No se pudo comprobar el estado de la sesión.";
+            authStatus.hidden = false;
+          }
         }
       }
 

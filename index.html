@@ -3,6 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    if (window.location.hostname.endsWith("github.io")) {
+      const base = document.createElement("base");
+      base.href = window.location.pathname.includes("/CFT-sitio-oficial/")
+        ? "/CFT-sitio-oficial/"
+        : "/";
+      document.head.append(base);
+    }
+  </script>
   <meta name="theme-color" content="#0b0f0e">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16-dark.png">
